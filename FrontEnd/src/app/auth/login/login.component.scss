@@ -3,14 +3,33 @@ main {
     height: 100vh;
     display: flex;
     align-items: center;
-    justify-content: center;
-    background-color: #cce6e1;
+    background-color: #caf0f1;
+    flex-direction: column;
+
+    .title {
+      font-family: 'DynaPuff', cursive;
+      color: #673ab7;
+      margin-top: 5%;
+      font-size: 3em;
+    }
+
+    .paws {
+      position: fixed;
+      top: 30%;
+      left: 30%;
+      width: 20%;
+
+      img {
+        width: 100%;
+      }
+    }
 
     form {
-        background-color: #fff;
+        margin-top: 10%;
+        background-color: #ffffffdd;
         display: flex;
         flex-direction: column;
-        padding: 1em;
+        padding: 2em 1.5em 1em;
         border-radius: 5px;
         box-shadow: 1px 1px 10px 1px #bbb;
         position: relative;
@@ -27,19 +46,26 @@ main {
             &:hover {
                 transform: translateY(-5px);
             }
-    
+
             img {
                 width: 100%;
             }
         }
 
-        .botonAcceder{
+        .btn-login {
             background-color: #673ab7;
             color: #fff;
             border-radius: 5px;
             margin-block: 1em;
             padding-block: .5em;
             cursor: pointer;
+        }
+
+        .btn-subscribe {
+          background-color: transparent;
+          color: #673ab7;
+          cursor: pointer;
+          margin-block: 1em;
         }
     }
 }
