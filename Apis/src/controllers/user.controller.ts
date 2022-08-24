@@ -5,9 +5,9 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 dotenv.config();
 
-export async function createUser(req: Request, res: Response) {
+export async function subscribe(req: Request, res: Response) {
     
-    const user: User = new User(req.body.username, req.body.name, req.body.surname, req.body.email, req.body.role, req.body.password);
+    const user: User = new User(req.body.username, req.body.name, req.body.surname, req.body.role, req.body.password, req.body.contact_information);
     
     const tmp_pass = await user.encryptPassword(req.body.password);
 
@@ -37,22 +37,19 @@ export async function createUser(req: Request, res: Response) {
 
 export async function signin(req: Request, res: Response) {
 
-    await conn.query(`SELECT * FROM system_user WHERE username = '${req.body.username}' AND deleted = FALSE`)
+    await conn.query(`SELECT id, password FROM auth_user WHERE username = '${req.body.username}' AND deleted = FALSE`)
     .then(async resp => {
 
-        if((resp as any).rows.length === 0 || (resp as any).rows === null || (resp as any).rows === undefined) {
+        if((resp as any).rows.length === 0 || !(resp as any).rows) {
             return res.status(400).json({
                 error: 'username or password incorrect'
             });
         } else { 
 
             const user = new User(
-                (resp as any).rows[0].username,
-                (resp as any).rows[0].name,
-                (resp as any).rows[0].surname,
-                (resp as any).rows[0].email,
-                (resp as any).rows[0].role,
+                null, null, null, null,
                 (resp as any).rows[0].password,
+                null,
                 (resp as any).rows[0].id
             );
     
@@ -69,7 +66,8 @@ export async function signin(req: Request, res: Response) {
             }, process.env.TOKEN_SECRET);
     
             res.header('Authorization', token).json({
-                data: user.responseDto()
+                status: 'OK',
+                user_id: user.id
             });
     
         }
@@ -234,7 +232,7 @@ export async function setRole(req: Request, res: Response) {
 
 export async function setPassword(req: Request, res: Response) {
 
-    const user = new User("","","","","","");
+    const user = new User("","","","","",null);
 
     const tmp_password = await user.encryptPassword(req.body.password);
 

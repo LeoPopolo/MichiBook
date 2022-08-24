@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 
-interface DataExtension {
+export class DataExtension {
     email: string;                       
     phone_number: string;              
     address: string;                     
@@ -48,11 +48,11 @@ export class User {
     }
 
     private parseContactInformation() {
-        return `(${this.contact_information.email}, ${this.contact_information.phone_number}, ${this.contact_information.address})::data_extension`;
+        return `('${this.contact_information.email}', '${this.contact_information.phone_number}', '${this.contact_information.address}')::data_extension`;
     }
 
     toString(){
-        return `'${this.name}','${this.surname}','${this.username}','${this.password}','${this.role}','${this.parseContactInformation()}'`;
+        return `'${this.name}','${this.surname}','${this.username}','${this.password}','${this.role}',${this.parseContactInformation()}`;
     }
 
     responseDto() {
@@ -61,7 +61,6 @@ export class User {
             name: this.name,
             surname: this.surname,
             username: this.username,
-            email: this.email,
             role: this.role
         }
 
