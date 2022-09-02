@@ -1,19 +1,20 @@
-CREATE TYPE user_role AS ENUM('admin', 'operator');
-
 CREATE TYPE data_extension AS (
     email                       text,
     phone_number                text,
     address                     text
 );
 
+CREATE TYPE personal_data AS (
+    name                        text NOT NULL,
+    surname                     text NOT NULL,
+    username                    text NOT NULL,
+    password                    text NOT NULL
+);
+
 CREATE TABLE auth_user (
-    name                        text,
-    surname                     text,
-    username                    text,
-    password                    text,
-    role                        user_role,
+    personal_data               personal_data,
     contact_information         data_extension,
-    deleted                     boolean DEFAULT FALSE
+    posts                       post[] DEFAULT '{}'
 ) INHERITS (
     core_object
 );
@@ -23,19 +24,15 @@ CREATE TABLE auth_user (
 
 
 CREATE OR REPLACE FUNCTION auth_user (
-    p_name                      text,
-    p_surname                   text,
-    p_username                  text,
-    p_password                  text,
-    p_role                      user_role,
+    p_personal_data             personal_data,
     p_contact_information       data_extension
 ) RETURNS auth_user AS $$
 DECLARE
     v_response                  auth_user;
 BEGIN
 
-    INSERT INTO auth_user(name, surname, username, password, role, contact_information) 
-                    VALUES (p_name, p_surname, p_username, p_password, p_role, p_contact_information)
+    INSERT INTO auth_user(personal_data, contact_information) 
+                    VALUES (p_personal_data, p_contact_information)
                     RETURNING * INTO v_response;
 
     RETURN v_response;
@@ -45,6 +42,15 @@ LANGUAGE plpgsql VOLATILE STRICT;
 
 
 -- SEARCH AND IDENTIFY
+
+
+CREATE OR REPLACE FUNCTION auth_user_exists (
+    p_id                        int
+) RETURNS boolean AS $$
+BEGIN
+    RETURN auth_user_identify_by_id(p_id) IS NOT NULL;
+END$$
+LANGUAGE plpgsql STABLE STRICT;
 
 
 CREATE OR REPLACE FUNCTION auth_user_identify_by_id (
@@ -227,3 +233,53 @@ BEGIN
 	RETURN v_response::text;
 END$$
 LANGUAGE plpgsql STABLE STRICT;
+
+
+CREATE OR REPLACE FUNCTION webapi_create_post (
+	p_user_id				    int,
+    p_post_text                 text,
+    p_image_id                  int
+) RETURNS jsonb AS $$
+DECLARE
+    v_post                      post;
+    v_response                  jsonb;
+BEGIN
+    v_post := post(p_post_text, p_image_id);
+
+    UPDATE auth_user
+        SET posts = array_append(posts(auth_user_identify_by_id(p_user_id)), v_post)
+        WHERE id = p_user_id;
+
+    v_response := jsonb_build_object (
+		'post', to_json(v_post)
+	);
+
+    RETURN v_response;
+END$$
+LANGUAGE plpgsql VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION webapi_delete_post (
+	p_user_id				    int,
+    p_post_id                   int
+) RETURNS jsonb AS $$
+DECLARE
+    v_post                      post;
+    v_response                  jsonb;
+BEGIN
+    v_post := post_identify_by_id(p_post_id);
+
+    UPDATE auth_user
+        SET posts = array_remove(posts(auth_user_identify_by_id(p_user_id)), v_post)
+        WHERE id = p_user_id;
+
+    PERFORM delete_post(p_post_id);
+
+    v_response := jsonb_build_object (
+		'message', 'Operation Completed',
+        'status', 'OK'
+	);
+
+    RETURN v_response;
+END$$
+LANGUAGE plpgsql VOLATILE;

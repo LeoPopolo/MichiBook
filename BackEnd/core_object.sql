@@ -1,6 +1,7 @@
 CREATE TABLE core_object (
     id                      serial,
-    creation_timestamp      timestamp DEFAULT current_timestamp
+    creation_timestamp      timestamp DEFAULT current_timestamp,
+    deleted                 boolean DEFAULT FALSE
 );
 
 
