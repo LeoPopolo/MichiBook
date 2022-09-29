@@ -5,16 +5,15 @@ CREATE TYPE data_extension AS (
 );
 
 CREATE TYPE personal_data AS (
-    name                        text NOT NULL,
-    surname                     text NOT NULL,
-    username                    text NOT NULL,
-    password                    text NOT NULL
+    name                        text,
+    surname                     text,
+    username                    text,
+    password                    text
 );
 
 CREATE TABLE auth_user (
     personal_data               personal_data,
-    contact_information         data_extension,
-    posts                       post[] DEFAULT '{}'
+    contact_information         data_extension
 ) INHERITS (
     core_object
 );
@@ -53,11 +52,29 @@ END$$
 LANGUAGE plpgsql STABLE STRICT;
 
 
+CREATE OR REPLACE FUNCTION auth_user_exists (
+    p_username                  text
+) RETURNS boolean AS $$
+BEGIN
+    RETURN auth_user_identify_by_username(p_username) IS NOT NULL;
+END$$
+LANGUAGE plpgsql STABLE STRICT;
+
+
 CREATE OR REPLACE FUNCTION auth_user_identify_by_id (
     p_id                        int
 ) RETURNS auth_user AS $$
 
     SELECT s FROM auth_user s WHERE id = p_id;
+
+$$ LANGUAGE sql STABLE STRICT;
+
+
+CREATE OR REPLACE FUNCTION auth_user_identify_by_username (
+    p_username                  text
+) RETURNS auth_user AS $$
+
+    SELECT s FROM auth_user s WHERE username(personal_data) = p_username;
 
 $$ LANGUAGE sql STABLE STRICT;
 
@@ -168,16 +185,61 @@ LANGUAGE plpgsql STABLE STRICT;
 -- WEBAPIS
 
 
-CREATE OR REPLACE FUNCTION webapi_auth_user_search (
-	p_page					int,
-	p_name					text DEFAULT '%',
-	p_surname				text DEFAULT '%',
-	p_username				text DEFAULT '%'
+CREATE OR REPLACE FUNCTION webapi_login (
+    p_username                  text
+) RETURNS text AS $$ 
+BEGIN
+    IF NOT auth_user_exists(p_username) THEN
+        RAISE EXCEPTION 'User does not exists';
+    END IF;
+
+    RETURN password(auth_user_identify_by_username(p_username));
+END$$
+LANGUAGE plpgsql IMMUTABLE STRICT;
+
+
+CREATE OR REPLACE FUNCTION webapi_register (
+    p_name                      text,
+    p_surname                   text,
+    p_username                  text,
+    p_password                  text,
+    p_email                     text,
+    p_phone_number              text,
+    p_address                   text
 ) RETURNS text AS $$
 DECLARE
-	v_users				    auth_user[];
-	v_response				jsonb;
-	v_total_pages			int DEFAULT 0;
+    v_user                      auth_user;
+    v_response                  jsonb;
+BEGIN
+    IF auth_user_exists(p_username) THEN
+        RAISE EXCEPTION 'Username already exists';
+    END IF;
+
+    v_user := auth_user(
+        (p_name, p_surname, p_username, p_password)::personal_data,
+        (p_email, p_phone_number, p_address)::data_extension
+    );
+
+    v_response := jsonb_build_object (
+		'user', to_json(v_user),
+        'status', 'OK'
+	);
+
+	RETURN v_response::text;
+END$$
+LANGUAGE plpgsql VOLATILE STRICT;
+
+
+CREATE OR REPLACE FUNCTION webapi_auth_user_search (
+	p_page					    int,
+	p_name					    text DEFAULT '%',
+	p_surname				    text DEFAULT '%',
+	p_username				    text DEFAULT '%'
+) RETURNS text AS $$
+DECLARE
+	v_users				        auth_user[];
+	v_response				    jsonb;
+	v_total_pages			    int DEFAULT 0;
 BEGIN
 	
 	v_users := auth_user_get_users();
@@ -228,58 +290,10 @@ DECLARE
 BEGIN
 	v_user := auth_user_identify_by_id(p_id);
 
-	v_response := to_json(v_user);
+	v_response := jsonb_build_object (
+		'user', array_to_json(v_user)
+	);
 
 	RETURN v_response::text;
 END$$
 LANGUAGE plpgsql STABLE STRICT;
-
-
-CREATE OR REPLACE FUNCTION webapi_create_post (
-	p_user_id				    int,
-    p_post_text                 text,
-    p_image_id                  int
-) RETURNS jsonb AS $$
-DECLARE
-    v_post                      post;
-    v_response                  jsonb;
-BEGIN
-    v_post := post(p_post_text, p_image_id);
-
-    UPDATE auth_user
-        SET posts = array_append(posts(auth_user_identify_by_id(p_user_id)), v_post)
-        WHERE id = p_user_id;
-
-    v_response := jsonb_build_object (
-		'post', to_json(v_post)
-	);
-
-    RETURN v_response;
-END$$
-LANGUAGE plpgsql VOLATILE;
-
-
-CREATE OR REPLACE FUNCTION webapi_delete_post (
-	p_user_id				    int,
-    p_post_id                   int
-) RETURNS jsonb AS $$
-DECLARE
-    v_post                      post;
-    v_response                  jsonb;
-BEGIN
-    v_post := post_identify_by_id(p_post_id);
-
-    UPDATE auth_user
-        SET posts = array_remove(posts(auth_user_identify_by_id(p_user_id)), v_post)
-        WHERE id = p_user_id;
-
-    PERFORM delete_post(p_post_id);
-
-    v_response := jsonb_build_object (
-		'message', 'Operation Completed',
-        'status', 'OK'
-	);
-
-    RETURN v_response;
-END$$
-LANGUAGE plpgsql VOLATILE;

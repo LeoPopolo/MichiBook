@@ -3,31 +3,15 @@ import { tokenValidation } from '../libs/verifyToken';
 
 const router: Router = Router();
 
-import { subscribe, 
-         signin, 
-         users, 
+import { getUsers, 
          identifyById, 
-         setName, 
-         setSurname,
-         setEmail, 
-         setPassword, 
-         setRole, 
-         deleteUser,
-         reactivateUser}  from '../controllers/user.controller';
+         login, 
+         register }  from '../controllers/user.controller';
 
-router.post('/signin', signin);
-router.post('/', subscribe);
+router.post('/register', register);
+router.get('/login', login);
 
-router.get('/', tokenValidation, users);
+router.get('/', tokenValidation, getUsers);
 router.get('/:id', tokenValidation, identifyById);
-
-router.delete('/:id', tokenValidation, deleteUser);
-
-router.patch('/reactivate/:id', tokenValidation, reactivateUser);
-router.patch('/name/:id', tokenValidation, setName);
-router.patch('/surname/:id', tokenValidation, setSurname);
-router.patch('/email/:id', tokenValidation, setEmail);
-router.patch('/role/:id', tokenValidation, setRole);
-router.patch('/password/:id', tokenValidation, setPassword);
 
 export default router;
