@@ -193,7 +193,7 @@ BEGIN
         RAISE EXCEPTION 'User does not exists';
     END IF;
 
-    RETURN password(auth_user_identify_by_username(p_username));
+    RETURN to_json(auth_user_identify_by_username(p_username))::text;
 END$$
 LANGUAGE plpgsql IMMUTABLE STRICT;
 

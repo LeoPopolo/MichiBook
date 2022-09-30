@@ -204,7 +204,7 @@ CREATE OR REPLACE FUNCTION webapi_post_search_by_friendship (
 DECLARE
 	v_posts				    post[];
 	v_response				jsonb;
-    v_posts_with_comments   jsonb;
+    v_posts_with_comments   jsonb[] DEFAULT '{}';
 	v_total_pages			int DEFAULT 0;
     v_post                  post;
 BEGIN
@@ -224,10 +224,14 @@ BEGIN
 
     FOREACH v_post IN ARRAY v_posts
     LOOP
-        v_posts_with_comments := jsonb_build_object (
-            'post', v_post,
+        v_posts_with_comments := array_append(v_posts_with_comments, jsonb_build_object (
+            'id', id(v_post),
+            'image_id', image_id(v_post),
+            'parent_id', parent_id(v_post),
+            'post_text', post_text(v_post),
+            'user_owner', to_json(user_owner(v_post)),
             'comments', post_get_as_comment(id(v_post))
-        );
+        ));
     END LOOP;
 	
 	v_response := jsonb_build_object (
@@ -268,10 +272,14 @@ BEGIN
 
     FOREACH v_post IN ARRAY v_posts
     LOOP
-        v_posts_with_comments := jsonb_build_object (
-            'post', v_post,
+        v_posts_with_comments := array_append(v_posts_with_comments, jsonb_build_object (
+            'id', id(v_post),
+            'image_id', image_id(v_post),
+            'parent_id', parent_id(v_post),
+            'post_text', post_text(v_post),
+            'user_owner', to_json(user_owner(v_post)),
             'comments', post_get_as_comment(id(v_post))
-        );
+        ));
     END LOOP;
 	
 	v_response := jsonb_build_object (

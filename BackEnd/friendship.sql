@@ -183,7 +183,7 @@ CREATE OR REPLACE FUNCTION friendship_get_by_user (
 
     SELECT array (
 		SELECT f FROM friendship f 
-			WHERE NOT deleted AND is_accepted = TRUE AND (user_emitted = auth_user_identify_by_id(p_user_id) OR user_received = auth_user_identify_by_id(p_user_id))
+			WHERE NOT deleted AND is_accepted = TRUE AND (id(user_emitted) = p_user_id OR id(user_received) = p_user_id)
 				ORDER BY creation_timestamp DESC
 	);
 
@@ -362,6 +362,46 @@ BEGIN
 	RETURN v_response::text;
 END$$ 
 LANGUAGE plpgsql STABLE STRICT;
+
+
+CREATE OR REPLACE FUNCTION webapi_friendship_identify_by_user_id (
+    p_user_from_id               int,
+    p_user_id                    int
+) RETURNS text AS $$
+DECLARE
+    v_user                       auth_user;
+    v_friendship                 friendship;
+    v_friendship_status          text;
+	v_response				     jsonb;
+    v_tmp_user                   jsonb;
+BEGIN
+	v_user := auth_user_identify_by_id(p_user_id);
+    v_friendship := friendship_get_between_users(p_user_from_id, p_user_id);
+
+    IF v_friendship IS NULL THEN
+        v_friendship_status := 'no friends';
+    ELSIF id(user_emitted(v_friendship)) = p_user_from_id AND NOT is_accepted(v_friendship) THEN
+        v_friendship_status := 'emitted';
+    ELSIF id(user_received(v_friendship)) = p_user_from_id AND NOT is_accepted(v_friendship) THEN
+        v_friendship_status := 'received';
+    ELSIF is_accepted(v_friendship) THEN
+        v_friendship_status := 'friends';
+    END IF;
+
+    v_tmp_user := jsonb_build_object (
+        'id', id(v_user),
+        'personal_data', to_json(personal_data(v_user)),
+        'contact_information', to_json(contact_information(v_user)),
+        'friendship_status', v_friendship_status
+    );
+	
+	v_response := jsonb_build_object (
+		'user', v_tmp_user
+	);
+    
+	RETURN v_response::text;
+END$$ 
+LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
 CREATE OR REPLACE FUNCTION webapi_friendship_get_user_requests (
