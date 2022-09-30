@@ -1,6 +1,6 @@
 CREATE TABLE post (
     post_text                   text NOT NULL,
-    image_id                    int,
+    image_path                  text,
     user_owner                  auth_user NOT NULL,
     parent_id                   int
 ) INHERITS (
@@ -13,7 +13,7 @@ CREATE TABLE post (
 
 CREATE OR REPLACE FUNCTION post (
     p_post_text                 text,
-    p_image_id                  int,
+    p_image_path                int,
     p_user_owner                auth_user,
     p_parent_id                 int
 ) RETURNS post AS $$
@@ -21,8 +21,8 @@ DECLARE
     v_response                  post;
 BEGIN
 
-    INSERT INTO post(post_text, image_id, user_owner, parent_id) 
-                    VALUES (p_post_text, p_image_id, p_user_owner, p_parent_id)
+    INSERT INTO post(post_text, image_path, user_owner, parent_id) 
+                    VALUES (p_post_text, p_image_path, p_user_owner, p_parent_id)
                     RETURNING * INTO v_response;
 
     RETURN v_response;
@@ -120,7 +120,7 @@ $$ LANGUAGE sql IMMUTABLE STRICT;
 CREATE OR REPLACE FUNCTION webapi_create_post (
     p_user_id                   int,
     p_post_text                 text,
-    p_image_id                  int
+    p_image_path                int
 ) RETURNS text AS $$
 DECLARE
     v_post                      post;
@@ -129,7 +129,7 @@ DECLARE
 BEGIN
     v_user := auth_user_identify_by_id(p_user_id);
     
-    v_post := post(p_post_text, p_image_id, v_user, null);
+    v_post := post(p_post_text, p_image_path, v_user, null);
 
     v_response := jsonb_build_object (
 		'post', v_post,
@@ -144,7 +144,7 @@ LANGUAGE plpgsql IMMUTABLE;
 CREATE OR REPLACE FUNCTION webapi_create_comment (
     p_user_id                   int,
     p_post_text                 text,
-    p_image_id                  int,
+    p_image_path                text,
     p_post_id                   int
 ) RETURNS text AS $$
 DECLARE
@@ -154,7 +154,7 @@ DECLARE
 BEGIN
     v_user := auth_user_identify_by_id(p_user_id);
     
-    v_post := post(p_post_text, p_image_id, v_user, p_post_id);
+    v_post := post(p_post_text, p_image_path, v_user, p_post_id);
 
     v_response := jsonb_build_object (
 		'post', v_post,
@@ -226,7 +226,7 @@ BEGIN
     LOOP
         v_posts_with_comments := array_append(v_posts_with_comments, jsonb_build_object (
             'id', id(v_post),
-            'image_id', image_id(v_post),
+            'image_path', image_path(v_post),
             'parent_id', parent_id(v_post),
             'post_text', post_text(v_post),
             'user_owner', to_json(user_owner(v_post)),
@@ -274,7 +274,7 @@ BEGIN
     LOOP
         v_posts_with_comments := array_append(v_posts_with_comments, jsonb_build_object (
             'id', id(v_post),
-            'image_id', image_id(v_post),
+            'image_path', image_path(v_post),
             'parent_id', parent_id(v_post),
             'post_text', post_text(v_post),
             'user_owner', to_json(user_owner(v_post)),

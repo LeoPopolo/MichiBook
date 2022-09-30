@@ -9,7 +9,7 @@ CREATE TYPE personal_data AS (
     surname                     text,
     username                    text,
     password                    text,
-    image_id                    int,
+    image_path                  text,
     profile_description         text
 );
 
@@ -208,7 +208,7 @@ CREATE OR REPLACE FUNCTION webapi_register (
     p_email                     text,
     p_phone_number              text,
     p_address                   text,
-    p_image_id                  int,
+    p_image_path                text,
     p_profile_description       text
 ) RETURNS text AS $$
 DECLARE
@@ -220,7 +220,7 @@ BEGIN
     END IF;
 
     v_user := auth_user(
-        (p_name, p_surname, p_username, p_password, p_image_id, p_profile_description)::personal_data,
+        (p_name, p_surname, p_username, p_password, p_image_path, p_profile_description)::personal_data,
         (p_email, p_phone_number, p_address)::data_extension
     );
 

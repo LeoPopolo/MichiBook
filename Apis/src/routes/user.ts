@@ -16,17 +16,20 @@ import { createPost,
          acceptFriendshipRequest,
          declineFriendshipRequest,
          removeFriendshipRequest,
-         identifyById }  from '../controllers/user.controller';
+         identifyById,
+         getUsers 
+} from '../controllers/user.controller';
 
 router.post('/register', register);
 router.get('/login', login);
 
+router.get('/:id', tokenValidation, identifyById);
+router.get('/', tokenValidation, getUsers);
 router.post('/post', tokenValidation, createPost);
 router.post('/comment', tokenValidation, createComment);
 router.get('/posts', tokenValidation, getFriendshipsPosts);
 router.get('/own_posts', tokenValidation, getOwnPosts);
 router.delete('/post/:post_id', tokenValidation, deletePost);
-router.get('/:id', tokenValidation, identifyById);
 
 router.patch('/friendship_request/:id', tokenValidation, sendFriendshipRequest);
 router.get('/friendship_request', tokenValidation, getUserRequests);

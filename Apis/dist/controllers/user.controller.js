@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeFriendshipRequest = exports.declineFriendshipRequest = exports.acceptFriendshipRequest = exports.identifyById = exports.getFriendships = exports.getUserRequests = exports.sendFriendshipRequest = exports.deletePost = exports.createComment = exports.createPost = exports.getOwnPosts = exports.getFriendshipsPosts = exports.login = exports.register = void 0;
+exports.removeFriendshipRequest = exports.declineFriendshipRequest = exports.acceptFriendshipRequest = exports.identifyById = exports.getFriendships = exports.getUserRequests = exports.sendFriendshipRequest = exports.deletePost = exports.createComment = exports.createPost = exports.getOwnPosts = exports.getUsers = exports.getFriendshipsPosts = exports.login = exports.register = void 0;
 const user_1 = require("../models/user");
 const database_1 = __importDefault(require("../database"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -86,6 +86,30 @@ function getFriendshipsPosts(req, res) {
     });
 }
 exports.getFriendshipsPosts = getFriendshipsPosts;
+function getUsers(req, res) {
+    const page = req.query.page;
+    let name = req.query.name ? req.query.name : null;
+    let surname = req.query.surname ? req.query.surname : null;
+    let username = req.query.username ? req.query.username : null;
+    if (name !== null && name !== 'null') {
+        name = "'" + name + "'";
+    }
+    if (username !== null && username !== 'null') {
+        username = "'" + username + "'";
+    }
+    if (surname !== null && surname !== 'null') {
+        surname = "'" + surname + "'";
+    }
+    database_1.default.query(`SELECT webapi_auth_user_search(${page}, ${name}, ${surname}, ${username})`)
+        .then(resp => {
+        const users = JSON.parse(resp.rows[0].webapi_auth_user_search);
+        res.status(200).json(Object.assign({}, users));
+    })
+        .catch(err => {
+        return res.status(400).send(err);
+    });
+}
+exports.getUsers = getUsers;
 function getOwnPosts(req, res) {
     const page = req.query.page;
     const data = jsonwebtoken_1.default.decode(req.headers.authorization);
