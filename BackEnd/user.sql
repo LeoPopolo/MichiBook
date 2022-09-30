@@ -8,7 +8,9 @@ CREATE TYPE personal_data AS (
     name                        text,
     surname                     text,
     username                    text,
-    password                    text
+    password                    text,
+    image_id                    int,
+    profile_description         text
 );
 
 CREATE TABLE auth_user (
@@ -205,7 +207,9 @@ CREATE OR REPLACE FUNCTION webapi_register (
     p_password                  text,
     p_email                     text,
     p_phone_number              text,
-    p_address                   text
+    p_address                   text,
+    p_image_id                  int,
+    p_profile_description       text
 ) RETURNS text AS $$
 DECLARE
     v_user                      auth_user;
@@ -216,7 +220,7 @@ BEGIN
     END IF;
 
     v_user := auth_user(
-        (p_name, p_surname, p_username, p_password)::personal_data,
+        (p_name, p_surname, p_username, p_password, p_image_id, p_profile_description)::personal_data,
         (p_email, p_phone_number, p_address)::data_extension
     );
 
@@ -227,7 +231,7 @@ BEGIN
 
 	RETURN v_response::text;
 END$$
-LANGUAGE plpgsql VOLATILE STRICT;
+LANGUAGE plpgsql VOLATILE;
 
 
 CREATE OR REPLACE FUNCTION webapi_auth_user_search (

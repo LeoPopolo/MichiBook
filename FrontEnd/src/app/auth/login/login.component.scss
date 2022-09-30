@@ -3,7 +3,7 @@ main {
     height: 100vh;
     display: flex;
     align-items: center;
-    background-color: #caf0f1;
+    background: linear-gradient(to bottom right, #9568e1, #d0f0ff);
     flex-direction: column;
 
     .title {

@@ -8,6 +8,11 @@ const routes: Routes = [
     component: LoginComponent
   },
   {
+    path: 'page',
+    loadChildren: () => import('./pages/pages.module')
+    .then(m => m.PagesModule),
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
