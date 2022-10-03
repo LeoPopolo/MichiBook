@@ -5,19 +5,19 @@
       <img src="../../../assets/rastroPatitas.png">
     </div>
 
-    <form>
+    <form [formGroup]="form">
         <div class="containerGatito" >
             <img src="../../../assets/gatito.png" alt="">
         </div>
         <mat-form-field>
             <mat-label>Usuario</mat-label>
-            <input matInput type="text">
+            <input matInput type="text" formControlName="username">
         </mat-form-field>
         <mat-form-field>
             <mat-label>Contraseña</mat-label>
-            <input matInput type="password" name="" id="">
+            <input matInput type="password" formControlName="password">
         </mat-form-field>
-        <button class="btn-login" type="submit">Acceder</button>
+        <button class="btn-login" type="submit" (click)="login()">Acceder</button>
         <button class="btn-subscribe">Registrarse</button>
     </form>
 </main>

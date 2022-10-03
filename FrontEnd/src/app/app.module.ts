@@ -9,6 +9,8 @@ import { LoginComponent } from './auth/login/login.component';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/AuthInterceptors';
 
 @NgModule({
   declarations: [
@@ -21,10 +23,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
     MatInputModule,
     MatFormFieldModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

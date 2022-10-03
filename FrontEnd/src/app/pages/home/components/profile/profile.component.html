@@ -1,3 +1,15 @@
 <aside>
-  <h1>hola</h1>
+  <div class="profile-image">
+    <img *ngIf="user.personal_data.image_path" src="http://localhost:3000/api/files/download/{{user.personal_data.image_path}}">
+    <img *ngIf="!user.personal_data.image_path" src="../../../../../assets/no-profile.png">
+  </div>
+  <div class="profile-name">
+    <span>{{user.personal_data.name}} {{user.personal_data.surname}}</span>
+  </div>
+  <div class="profile-username">
+    <span>@{{user.personal_data.username}}</span>
+  </div>
+  <div class="profile-description">
+    <p>{{user.personal_data.profile_description}}</p>
+  </div>
 </aside>

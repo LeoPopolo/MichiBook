@@ -17,12 +17,14 @@ import { createPost,
          declineFriendshipRequest,
          removeFriendshipRequest,
          identifyById,
-         getUsers 
+         getUsers, 
+         getProfile
 } from '../controllers/user.controller';
 
 router.post('/register', register);
-router.get('/login', login);
+router.post('/login', login);
 
+router.get('/profile', tokenValidation, getProfile);
 router.get('/:id', tokenValidation, identifyById);
 router.get('/', tokenValidation, getUsers);
 router.post('/post', tokenValidation, createPost);

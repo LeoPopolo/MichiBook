@@ -1,3 +1,41 @@
 aside {
   width: 100%;
+  padding: 1em;
+
+  .profile-image {
+    width: 12vh;
+    height: 12vh;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow: 1px 1px 10px 1px #bbb;
+    margin: 1em auto;
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 100%;
+      cursor: pointer;
+    }
+  }
+
+  .profile-name, .profile-username {
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 30%;
+    margin-top: .5em;
+
+    span {
+      font-weight: bold;
+    }
+  }
+
+  .profile-description {
+    margin-top: 1em;
+    padding: .5em;
+    box-shadow: 1px 1px 5px 1px #bbb inset;
+
+    p {
+      text-align: center;
+    }
+  }
 }

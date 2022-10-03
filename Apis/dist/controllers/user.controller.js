@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeFriendshipRequest = exports.declineFriendshipRequest = exports.acceptFriendshipRequest = exports.identifyById = exports.getFriendships = exports.getUserRequests = exports.sendFriendshipRequest = exports.deletePost = exports.createComment = exports.createPost = exports.getOwnPosts = exports.getUsers = exports.getFriendshipsPosts = exports.login = exports.register = void 0;
+exports.removeFriendshipRequest = exports.declineFriendshipRequest = exports.acceptFriendshipRequest = exports.getProfile = exports.identifyById = exports.getFriendships = exports.getUserRequests = exports.sendFriendshipRequest = exports.deletePost = exports.createComment = exports.createPost = exports.getOwnPosts = exports.getUsers = exports.getFriendshipsPosts = exports.login = exports.register = void 0;
 const user_1 = require("../models/user");
 const database_1 = __importDefault(require("../database"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -21,6 +21,7 @@ dotenv_1.default.config();
 function register(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const tmp_password = yield (0, user_1.encryptPassword)(req.body.password);
+        const image_path = req.body.image_path ? `'${req.body.image_path}'` : null;
         database_1.default.query(`SELECT webapi_register(
                                 '${req.body.name}',
                                 '${req.body.surname}',
@@ -28,7 +29,9 @@ function register(req, res) {
                                 '${tmp_password}',
                                 '${req.body.contact_information.email}',
                                 '${req.body.contact_information.phone_number}',
-                                '${req.body.contact_information.address}'
+                                '${req.body.contact_information.address}',
+                                ${image_path},
+                                '${req.body.profile_description}'
                             )`)
             .then(resp => {
             const token = jsonwebtoken_1.default.sign({
@@ -228,6 +231,22 @@ function identifyById(req, res) {
     });
 }
 exports.identifyById = identifyById;
+function getProfile(req, res) {
+    const data = jsonwebtoken_1.default.decode(req.headers.authorization);
+    const token_id = data._id;
+    database_1.default.query(`SELECT webapi_auth_user_identify_by_id(${token_id})`)
+        .then(resp => {
+        const data = JSON.parse(resp.rows[0].webapi_auth_user_identify_by_id);
+        delete data.user.personal_data.password;
+        delete data.user.deleted;
+        delete data.user.creation_timestamp;
+        res.status(200).json(Object.assign({}, data));
+    })
+        .catch(err => {
+        return res.status(400).send(err);
+    });
+}
+exports.getProfile = getProfile;
 function acceptFriendshipRequest(req, res) {
     const data = jsonwebtoken_1.default.decode(req.headers.authorization);
     const token_id = data._id;

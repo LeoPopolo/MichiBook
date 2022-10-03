@@ -8,6 +8,7 @@ dotenv.config();
 export async function register(req: Request, res: Response) {
 
     const tmp_password = await encryptPassword(req.body.password);
+    const image_path = req.body.image_path ? `'${req.body.image_path}'` : null;
 
     conn.query(`SELECT webapi_register(
                                 '${req.body.name}',
@@ -16,7 +17,9 @@ export async function register(req: Request, res: Response) {
                                 '${tmp_password}',
                                 '${req.body.contact_information.email}',
                                 '${req.body.contact_information.phone_number}',
-                                '${req.body.contact_information.address}'
+                                '${req.body.contact_information.address}',
+                                ${image_path},
+                                '${req.body.profile_description}'
                             )`)
     .then(resp => {
 
@@ -294,6 +297,29 @@ export function identifyById(req: Request, res: Response) {
 
         res.status(200).json({
             ...friendship
+        });
+    })
+    .catch(err => {
+        return res.status(400).send(err);
+    });
+}
+
+export function getProfile(req: Request, res: Response) {
+
+    const data = jwt.decode(req.headers.authorization);
+    const token_id = (data as any)._id;
+
+    conn.query(`SELECT webapi_auth_user_identify_by_id(${token_id})`)
+    .then(resp => {
+
+        const data = JSON.parse((resp as any).rows[0].webapi_auth_user_identify_by_id);
+
+        delete data.user.personal_data.password;
+        delete data.user.deleted;
+        delete data.user.creation_timestamp;
+
+        res.status(200).json({
+            ...data
         });
     })
     .catch(err => {

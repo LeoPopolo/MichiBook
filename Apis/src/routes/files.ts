@@ -2,7 +2,6 @@ import { Router } from 'express';
 import path from 'path';
 import multer from 'multer';
 
-import { tokenValidation } from '../libs/verifyToken';
 import { downloadImage, uploadImage } from '../controllers/files.controller';
 
 let storage = multer.diskStorage({
@@ -19,6 +18,6 @@ const upload = multer( { storage } );
 const router: Router = Router();
 
 router.post('/upload', upload.single('file'), uploadImage);
-router.get('/download/:file_path', tokenValidation, downloadImage);
+router.get('/download/:file_path', downloadImage);
 
 export default router;

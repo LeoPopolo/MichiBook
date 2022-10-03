@@ -295,7 +295,7 @@ BEGIN
 	v_user := auth_user_identify_by_id(p_id);
 
 	v_response := jsonb_build_object (
-		'user', array_to_json(v_user)
+		'user', to_json(v_user)
 	);
 
 	RETURN v_response::text;
