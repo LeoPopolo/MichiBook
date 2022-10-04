@@ -82,6 +82,11 @@ function getFriendshipsPosts(req, res) {
     database_1.default.query(`SELECT webapi_post_search_by_friendship(${token_id}, ${page})`)
         .then(resp => {
         const posts = JSON.parse(resp.rows[0].webapi_post_search_by_friendship);
+        for (let post of posts.posts) {
+            delete post.user_owner.deleted;
+            delete post.user_owner.creation_timestamp;
+            delete post.user_owner.personal_data.password;
+        }
         res.status(200).json(Object.assign({}, posts));
     })
         .catch(err => {
@@ -120,6 +125,11 @@ function getOwnPosts(req, res) {
     database_1.default.query(`SELECT webapi_post_search_own(${token_id}, ${page})`)
         .then(resp => {
         const posts = JSON.parse(resp.rows[0].webapi_post_search_own);
+        for (let post of posts.posts) {
+            delete post.user_owner.deleted;
+            delete post.user_owner.creation_timestamp;
+            delete post.user_owner.personal_data.password;
+        }
         res.status(200).json(Object.assign({}, posts));
     })
         .catch(err => {
@@ -130,9 +140,12 @@ exports.getOwnPosts = getOwnPosts;
 function createPost(req, res) {
     const data = jsonwebtoken_1.default.decode(req.headers.authorization);
     const token_id = data._id;
-    database_1.default.query(`SELECT webapi_create_post(${token_id}, '${req.body.post_text}', ${req.body.image_id})`)
+    database_1.default.query(`SELECT webapi_create_post(${token_id}, '${req.body.post_text}', ${req.body.image_path})`)
         .then(resp => {
         const post = JSON.parse(resp.rows[0].webapi_create_post);
+        delete post.post.user_owner.deleted;
+        delete post.post.user_owner.personal_data.password;
+        delete post.post.user_owner.creation_timestamp;
         res.status(200).json(Object.assign({}, post));
     })
         .catch(err => {
@@ -203,14 +216,15 @@ function getFriendships(req, res) {
     const page = req.query.page;
     const data = jsonwebtoken_1.default.decode(req.headers.authorization);
     const token_id = data._id;
-    database_1.default.query(`SELECT webapi_friendship_search(${page}, ${token_id})`)
+    database_1.default.query(`SELECT webapi_friendship_search_friends(${page}, ${token_id})`)
         .then(resp => {
-        const friendship = JSON.parse(resp.rows[0].webapi_friendship_search);
-        for (let item of friendship.friendships) {
-            delete item.user_emitted.personal_data.password;
-            delete item.user_received.personal_data.password;
+        const users = JSON.parse(resp.rows[0].webapi_friendship_search_friends);
+        for (let item of users.friends) {
+            delete item.personal_data.password;
+            delete item.creation_timestamp;
+            delete item.deleted;
         }
-        res.status(200).json(Object.assign({}, friendship));
+        res.status(200).json(Object.assign({}, users));
     })
         .catch(err => {
         return res.status(400).send(err);

@@ -1,0 +1,20 @@
+
+<div class="container">
+  <app-friend
+    [friend]="post.user_owner"
+  ></app-friend>
+  <div class="post-text">
+    <p>{{post.post_text}}</p>
+  </div>
+  <div class="post-image" *ngIf="post.image_path">
+    <img src="http://localhost:3000/api/files/download/{{post.image_path}}">
+  </div>
+  <div class="post-reactions">
+    <div>
+      <button class="btn-secondary">Me gusta</button>
+      <button class="btn-secondary">Comentar</button>
+      <button class="btn-secondary">Compartir</button>
+    </div>
+    <span>{{post.creation_timestamp | date:'short'}}</span>
+  </div>
+</div>

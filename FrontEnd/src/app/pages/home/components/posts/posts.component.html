@@ -1,1 +1,21 @@
-<p>posts works!</p>
+<main>
+  <div class="user-data">
+    <div class="user-data_image">
+      <img src="http://localhost:3000/api/files/download/{{user.personal_data.image_path}}">
+    </div>
+    <span>{{user.personal_data.name}} {{user.personal_data.surname}}</span>
+  </div>
+  <div class="post">
+    <textarea matInput rows="8" placeholder="¿Qué queres publicar?" [(ngModel)]="post.post_text"></textarea>
+    <div>
+      <button class="btn-primary" (click)="postIt()">Publicar</button>
+    </div>
+  </div>
+
+  <div class="posts-container">
+    <app-post
+      *ngFor="let post of posts"
+      [post]="post"
+    ></app-post>
+  </div>
+</main>

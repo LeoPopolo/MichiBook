@@ -86,8 +86,8 @@ CREATE OR REPLACE FUNCTION post_get_by_friendship (
 
     SELECT array (
 		SELECT p FROM post p, friendship f WHERE (NOT p.deleted) AND (id(user_emitted) = p_user_id OR id(user_received) = p_user_id) 
-                                                    AND ((id(user_owner) = id(user_received) AND id(user_owner) != p_user_id) OR 
-                                                        (id(user_owner) = id(user_emitted) AND id(user_owner) != p_user_id))
+                                                    AND (id(user_owner) = id(user_received) OR 
+                                                         id(user_owner) = id(user_emitted))
                                                     AND parent_id IS NULL
 				ORDER BY p.creation_timestamp DESC
 	);
@@ -229,6 +229,7 @@ BEGIN
             'image_path', image_path(v_post),
             'parent_id', parent_id(v_post),
             'post_text', post_text(v_post),
+            'creation_timestamp', creation_timestamp(v_post),
             'user_owner', to_json(user_owner(v_post)),
             'comments', post_get_as_comment(id(v_post))
         ));
@@ -252,7 +253,7 @@ CREATE OR REPLACE FUNCTION webapi_post_search_own (
 DECLARE
 	v_posts				    post[];
 	v_response				jsonb;
-    v_posts_with_comments   jsonb;
+    v_posts_with_comments   jsonb[] DEFAULT '{}';
 	v_total_pages			int DEFAULT 0;
     v_post                  post;
 BEGIN
@@ -277,6 +278,7 @@ BEGIN
             'image_path', image_path(v_post),
             'parent_id', parent_id(v_post),
             'post_text', post_text(v_post),
+            'creation_timestamp', creation_timestamp(v_post),
             'user_owner', to_json(user_owner(v_post)),
             'comments', post_get_as_comment(id(v_post))
         ));

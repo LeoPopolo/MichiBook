@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  align-items: center;
+  padding-block: .5em;
+
+  .container_img {
+    width: 2em;
+    height: 2em;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+
+    img {
+      height: 100%;
+    }
+  }
+
+  span {
+    margin-left: 1.5em;
+  }
+}

@@ -89,6 +89,12 @@ export function getFriendshipsPosts(req: Request, res: Response) {
                 
         const posts = JSON.parse((resp as any).rows[0].webapi_post_search_by_friendship);
 
+        for (let post of posts.posts) {
+            delete post.user_owner.deleted;
+            delete post.user_owner.creation_timestamp;
+            delete post.user_owner.personal_data.password;
+        }
+
         res.status(200).json({
             ...posts
         });
@@ -143,6 +149,12 @@ export function getOwnPosts(req: Request, res: Response) {
                 
         const posts = JSON.parse((resp as any).rows[0].webapi_post_search_own);
 
+        for (let post of posts.posts) {
+            delete post.user_owner.deleted;
+            delete post.user_owner.creation_timestamp;
+            delete post.user_owner.personal_data.password;
+        }
+
         res.status(200).json({
             ...posts
         });
@@ -157,10 +169,14 @@ export function createPost(req: Request, res: Response) {
     const data = jwt.decode(req.headers.authorization);
     const token_id = (data as any)._id;
 
-    conn.query(`SELECT webapi_create_post(${token_id}, '${req.body.post_text}', ${req.body.image_id})`)
+    conn.query(`SELECT webapi_create_post(${token_id}, '${req.body.post_text}', ${req.body.image_path})`)
     .then(resp => {
                 
         const post = JSON.parse((resp as any).rows[0].webapi_create_post);
+
+        delete post.post.user_owner.deleted;
+        delete post.post.user_owner.personal_data.password;
+        delete post.post.user_owner.creation_timestamp;
 
         res.status(200).json({
             ...post
@@ -264,18 +280,19 @@ export function getFriendships(req: Request, res: Response) {
     const data = jwt.decode(req.headers.authorization);
     const token_id = (data as any)._id;
 
-    conn.query(`SELECT webapi_friendship_search(${page}, ${token_id})`)
+    conn.query(`SELECT webapi_friendship_search_friends(${page}, ${token_id})`)
     .then(resp => {
 
-        const friendship = JSON.parse((resp as any).rows[0].webapi_friendship_search);
+        const users = JSON.parse((resp as any).rows[0].webapi_friendship_search_friends);
         
-        for (let item of friendship.friendships) {
-            delete item.user_emitted.personal_data.password;
-            delete item.user_received.personal_data.password;
+        for (let item of users.friends) {
+            delete item.personal_data.password;
+            delete item.creation_timestamp;
+            delete item.deleted;
         }
 
         res.status(200).json({
-            ...friendship
+            ...users
         });
     })
     .catch(err => {

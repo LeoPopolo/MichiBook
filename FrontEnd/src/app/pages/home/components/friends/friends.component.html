@@ -1,1 +1,9 @@
-<p>friends works!</p>
+<aside>
+  <h3>Amigos</h3>
+  <div *ngFor="let item of friends">
+    <app-friend
+      [friend]="item"
+      [smallMargin]="true"
+    ></app-friend>
+  </div>
+</aside>

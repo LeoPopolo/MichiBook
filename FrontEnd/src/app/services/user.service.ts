@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { User } from '../interfaces/user.interface';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -16,5 +15,21 @@ export class UserService {
 
   getProfile(): Observable<any> {
     return this._http.get<any>(`${this.endpoint}/user/profile`);
+  }
+
+  getFriends(page: number): Observable<any> {
+    return this._http.get<any>(`${this.endpoint}/user/friendships/list?page=${page}`);
+  }
+
+  getPosts(page: number): Observable<any> {
+    return this._http.get<any>(`${this.endpoint}/user/posts/list?page=${page}`);
+  }
+
+  createPost(post: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    return this._http.post<any>(`${this.endpoint}/user/post`, post, { headers: headers });
   }
 }

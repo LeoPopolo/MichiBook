@@ -190,6 +190,21 @@ CREATE OR REPLACE FUNCTION friendship_get_by_user (
 $$ LANGUAGE sql STABLE STRICT;
 
 
+CREATE OR REPLACE FUNCTION friendship_get_friends_by_user (
+    p_user_id                    int
+) RETURNS auth_user[] AS $$
+
+    SELECT array (
+		SELECT u FROM friendship f, auth_user u 
+            WHERE NOT u.deleted AND NOT f.deleted AND (id(f.user_emitted) = p_user_id OR id(f.user_received) = p_user_id)
+			    AND (id(f.user_emitted) = u.id OR id(f.user_received) = u.id)
+                AND u.id != p_user_id
+				    ORDER BY name(personal_data) ASC
+	);
+
+$$ LANGUAGE sql STABLE STRICT;
+
+
 CREATE OR REPLACE FUNCTION friendship_request_get_by_user_received (
     p_user_id                    int
 ) 
@@ -461,6 +476,40 @@ BEGIN
 	
 	v_response := jsonb_build_object (
 		'friendships', array_to_json(v_friendships),
+		'total_pages', v_total_pages,
+		'page_number', p_page
+	);
+
+	RETURN v_response::text;
+END$$ 
+LANGUAGE plpgsql STABLE;
+
+
+CREATE OR REPLACE FUNCTION webapi_friendship_search_friends (
+	p_page					     int,
+    p_user_id                    int
+) RETURNS text AS $$
+DECLARE
+	v_users                      auth_user[];
+	v_response				     jsonb;
+	v_total_pages			     int DEFAULT 0;
+BEGIN
+	
+	v_users := friendship_get_friends_by_user(p_user_id);
+	
+	IF p_page != 1
+	THEN
+		v_users := auth_user_paginate(p_page, v_users);
+	END IF;
+
+	v_total_pages := auth_user_get_total_pages(v_users);
+
+	IF v_total_pages IS NULL THEN
+		v_total_pages := 0;
+	END IF;
+	
+	v_response := jsonb_build_object (
+		'friends', array_to_json(v_users),
 		'total_pages', v_total_pages,
 		'page_number', p_page
 	);

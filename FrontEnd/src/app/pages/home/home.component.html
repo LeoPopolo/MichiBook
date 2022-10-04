@@ -2,6 +2,11 @@
   <app-profile
     [user]="user"
   ></app-profile>
-  <app-posts></app-posts>
-  <app-friends></app-friends>
+  <app-posts
+    [posts]="posts"
+    (posted)="getPosts()"
+  ></app-posts>
+  <app-friends
+    [friends]="friends"
+  ></app-friends>
 </main>
