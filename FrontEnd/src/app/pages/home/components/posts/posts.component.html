@@ -8,7 +8,7 @@
   <div class="post">
     <textarea matInput rows="8" placeholder="¿Qué queres publicar?" [(ngModel)]="post.post_text"></textarea>
     <div>
-      <button class="btn-primary" (click)="postIt()">Publicar</button>
+      <button class="btn-primary" (click)="postIt()" [disabled]="!post.post_text">Publicar</button>
     </div>
   </div>
 

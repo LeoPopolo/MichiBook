@@ -15,6 +15,11 @@
   padding: .7em 1em;
   box-shadow: 1px 1px 5px 1px #bbb;
   cursor: pointer;
+
+  &:disabled {
+    background-color: #ddd;
+    color: #bbb;
+  }
 }
 
 .btn-secondary {
