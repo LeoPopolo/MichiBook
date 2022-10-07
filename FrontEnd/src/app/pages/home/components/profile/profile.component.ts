@@ -10,6 +10,7 @@ import { User } from '../../../../interfaces/user.interface';
 export class ProfileComponent implements OnInit {
 
   @Input() user!: User;
+  @Input() friends!: Array<User>;
 
   constructor(
     private router: Router

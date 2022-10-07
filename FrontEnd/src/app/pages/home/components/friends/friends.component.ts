@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../interfaces/user.interface';
 
 @Component({
@@ -10,9 +11,24 @@ export class FriendsComponent implements OnInit {
 
   @Input() friends!: Array<User>;
 
-  constructor() { }
+  users: Array<User> = [];
+
+  filter = {
+    page: 1,
+    filter_string: ''
+  }
+
+  constructor(
+    private userServices: UserService
+  ) { }
 
   ngOnInit(): void {
+  }
+
+  getUsers() {
+    this.userServices.getUsers(this.filter).subscribe(data => {
+      console.log(data);
+    });
   }
 
 }

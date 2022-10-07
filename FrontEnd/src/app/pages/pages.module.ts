@@ -8,7 +8,7 @@ import { ProfileComponent } from './home/components/profile/profile.component';
 import { PostsComponent } from './home/components/posts/posts.component';
 import { FriendsComponent } from './home/components/friends/friends.component';
 import { HomeComponent } from './home/home.component';
-import { FriendComponent } from './home/components/friends/friend/friend.component';
+import { UserHeaderComponent } from './shared/userHeader/user-header.component';
 import { PostComponent } from './home/components/posts/post/post.component';
 
 @NgModule({
@@ -19,7 +19,7 @@ import { PostComponent } from './home/components/posts/post/post.component';
     PostsComponent,
     FriendsComponent,
     HomeComponent,
-    FriendComponent,
+    UserHeaderComponent,
     PostComponent
   ],
   imports: [

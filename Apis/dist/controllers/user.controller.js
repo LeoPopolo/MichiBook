@@ -96,21 +96,18 @@ function getFriendshipsPosts(req, res) {
 exports.getFriendshipsPosts = getFriendshipsPosts;
 function getUsers(req, res) {
     const page = req.query.page;
-    let name = req.query.name ? req.query.name : null;
-    let surname = req.query.surname ? req.query.surname : null;
-    let username = req.query.username ? req.query.username : null;
-    if (name !== null && name !== 'null') {
-        name = "'" + name + "'";
+    let filter_string = req.query.filter_string ? req.query.filter_string : null;
+    if (filter_string !== null && filter_string !== 'null') {
+        filter_string = "'" + filter_string + "'";
     }
-    if (username !== null && username !== 'null') {
-        username = "'" + username + "'";
-    }
-    if (surname !== null && surname !== 'null') {
-        surname = "'" + surname + "'";
-    }
-    database_1.default.query(`SELECT webapi_auth_user_search(${page}, ${name}, ${surname}, ${username})`)
+    database_1.default.query(`SELECT webapi_auth_user_search(${page}, ${filter_string})`)
         .then(resp => {
         const users = JSON.parse(resp.rows[0].webapi_auth_user_search);
+        for (let user of users.users) {
+            delete user.deleted;
+            delete user.personal_data.password;
+            delete user.creation_timestamp;
+        }
         res.status(200).json(Object.assign({}, users));
     })
         .catch(err => {

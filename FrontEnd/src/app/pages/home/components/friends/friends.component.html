@@ -1,9 +1,14 @@
 <aside>
-  <h3>Amigos</h3>
+  <header>
+    <h3>Buscar personas</h3>
+    <input
+      type="text"
+      placeholder="Nombre, apellido o usuario..."
+      class="search-people"
+      [(ngModel)]="filter.filter_string"
+      (ngModelChange)="getUsers()"
+    >
+  </header>
   <div *ngFor="let item of friends">
-    <app-friend
-      [friend]="item"
-      [smallMargin]="true"
-    ></app-friend>
   </div>
 </aside>

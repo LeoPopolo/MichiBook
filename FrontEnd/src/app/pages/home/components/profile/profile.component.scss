@@ -21,10 +21,9 @@ aside {
     }
   }
 
-  .profile-name, .profile-username {
+  .profile-name, .profile-username, .profile-friends {
     display: flex;
-    justify-content: flex-start;
-    padding-left: 30%;
+    justify-content: center;
     margin-top: .5em;
 
     span {
@@ -36,6 +35,15 @@ aside {
     span {
       font-size: .8em;
       color: #909090;
+    }
+  }
+
+  .profile-friends {
+    span {
+      font-size: 1em;
+      color: #673ab7;
+      cursor: pointer;
+      margin-top: 1em;
     }
   }
 

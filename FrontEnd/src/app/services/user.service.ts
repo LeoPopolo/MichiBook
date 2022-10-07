@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -23,6 +23,15 @@ export class UserService {
 
   getPosts(page: number): Observable<any> {
     return this._http.get<any>(`${this.endpoint}/user/posts/list?page=${page}`);
+  }
+
+  getUsers(filters: any): Observable<any> {
+
+    let params = new HttpParams()
+      .set('page', filters.page)
+      .set('filter_string', filters.filter_string);
+
+    return this._http.get<any>(`${this.endpoint}/user`, { params: params });
   }
 
   createPost(post: any): Observable<any> {

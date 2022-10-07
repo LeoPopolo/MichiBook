@@ -184,6 +184,34 @@ END$$
 LANGUAGE plpgsql STABLE STRICT;
 
 
+CREATE OR REPLACE FUNCTION auth_user_filter_by_anything (
+    p_users                     auth_user[],
+    p_filter                    text
+) RETURNS auth_user[] AS $$
+DECLARE
+    v_users                     text;
+    v_querystring               text;
+BEGIN
+
+    v_querystring := format (
+        'SELECT ARRAY(SELECT x FROM unnest(%L::%s) x 
+            WHERE (name(personal_data) ilike ''%%'' || %L || ''%%'') OR
+                  (surname(personal_data) ilike ''%%'' || %L || ''%%'') OR
+                  (username(personal_data) ilike ''%%'' || %L || ''%%'') )', 
+        p_users,
+        pg_typeof(p_users),
+        p_filter,
+        p_filter,
+        p_filter
+    );
+
+    EXECUTE v_querystring INTO v_users;
+
+    RETURN v_users;
+END$$ 
+LANGUAGE plpgsql STABLE STRICT;
+
+
 -- WEBAPIS
 
 
@@ -236,9 +264,7 @@ LANGUAGE plpgsql VOLATILE;
 
 CREATE OR REPLACE FUNCTION webapi_auth_user_search (
 	p_page					    int,
-	p_name					    text DEFAULT '%',
-	p_surname				    text DEFAULT '%',
-	p_username				    text DEFAULT '%'
+	p_filter    			    text DEFAULT '%'
 ) RETURNS text AS $$
 DECLARE
 	v_users				        auth_user[];
@@ -248,19 +274,9 @@ BEGIN
 	
 	v_users := auth_user_get_users();
 	
-	IF p_name != '%' AND p_name IS NOT NULL
+	IF p_filter != '%' AND p_filter IS NOT NULL
 	THEN
-		v_users := auth_user_filter_by_name(v_users, p_name);
-	END IF;
-	
-	IF p_surname != '%' AND p_surname IS NOT NULL
-	THEN
-		v_users := auth_user_filter_by_surname(v_users, p_surname);
-	END IF;
-
-	IF p_username != '%' AND p_username IS NOT NULL
-	THEN
-		v_users := auth_user_filter_by_username(v_users, p_username);
+		v_users := auth_user_filter_by_anything(v_users, p_filter);
 	END IF;
 	
 	IF p_page != 1
