@@ -106,6 +106,9 @@ export function getFriendshipsPosts(req: Request, res: Response) {
 
 export function getUsers(req: Request, res: Response) {
     
+    const data = jwt.decode(req.headers.authorization);
+    const token_id = (data as any)._id;
+
     const page = req.query.page;
     let filter_string = req.query.filter_string ? req.query.filter_string : null;
 
@@ -113,10 +116,10 @@ export function getUsers(req: Request, res: Response) {
         filter_string = "'" + filter_string + "'"; 
     }
     
-    conn.query(`SELECT webapi_auth_user_search(${page}, ${filter_string})`)
+    conn.query(`SELECT webapi_auth_user_search_with_friendship_status(${page}, ${token_id}, ${filter_string})`)
     .then(resp => {
                 
-        const users = JSON.parse((resp as any).rows[0].webapi_auth_user_search);
+        const users = JSON.parse((resp as any).rows[0].webapi_auth_user_search_with_friendship_status);
 
         for (let user of users.users) {
             delete user.deleted;
@@ -129,6 +132,7 @@ export function getUsers(req: Request, res: Response) {
         });
     })
     .catch(err => {
+        console.log(err);
         return res.status(400).send(err);
     });
 }

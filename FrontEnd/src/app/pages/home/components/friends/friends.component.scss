@@ -16,9 +16,9 @@ aside {
       float: right;
       border-radius: 100px;
       outline-width: 1px;
-      outline-color: #673ab7;
+      outline-color: var(--primary-color);
       padding: .5em 1em;
-      border: 1px solid #673ab7;
+      border: 1px solid var(--primary-color);
     }
   }
 }

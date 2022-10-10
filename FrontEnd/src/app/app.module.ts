@@ -7,10 +7,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/AuthInterceptors';
+import { MaterialModule } from './shared/material.module';
 
 @NgModule({
   declarations: [
@@ -24,8 +23,7 @@ import { AuthInterceptor } from './interceptors/AuthInterceptors';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    MatInputModule,
-    MatFormFieldModule
+    MaterialModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

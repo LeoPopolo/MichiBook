@@ -2,6 +2,7 @@ export interface User {
   id: number;
   personal_data: PersonalData;
   contact_information: DataExtension;
+  friendship_status?: string;
 }
 
 interface PersonalData {

@@ -9,10 +9,41 @@ import { User } from '../../../interfaces/user.interface';
 export class UserHeaderComponent implements OnInit {
 
   @Input() user!: User;
+  @Input() showFriendshipStatus!: boolean;
 
-  constructor() { }
+  loggedUser: User;
+
+  constructor() {
+    this.loggedUser = JSON.parse(localStorage.getItem('user')!);
+  }
 
   ngOnInit(): void {
   }
 
+  parseFriendshipStatus(status: string) {
+    switch (status) {
+      case 'no friends': {
+        return 'Agregar';
+      }
+      case 'emitted': {
+        return 'Pendiente';
+      }
+      case 'received': {
+        return 'Confirmar';
+      }
+      case 'friends': {
+        return 'Amigos';
+      }
+      default: {
+        return '';
+      }
+    }
+  }
+
+  parseButtonClass(status: string) {
+    if (status === 'emitted' || status === 'received' || status === 'friends')
+      return 'btn-secondary';
+    else
+      return 'btn-primary';
+  }
 }

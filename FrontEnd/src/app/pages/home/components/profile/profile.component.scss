@@ -61,5 +61,12 @@ aside {
     position: absolute;
     bottom: 1em;
     left: 35%;
+
+    mat-icon {
+      font-size: 1.2em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }

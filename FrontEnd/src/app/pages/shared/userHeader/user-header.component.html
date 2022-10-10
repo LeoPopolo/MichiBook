@@ -1,6 +1,11 @@
 <div class="container">
-  <div class="container_img">
-    <img src="http://localhost:3000/api/files/download/{{user.personal_data.image_path}}">
+  <div class="container_info">
+    <div class="container_img">
+      <img src="http://localhost:3000/api/files/download/{{user.personal_data.image_path}}">
+    </div>
+    <span>{{user.personal_data.name}} {{user.personal_data.surname}}</span>
   </div>
-  <span>{{user.personal_data.name}} {{user.personal_data.surname}}</span>
+  <div class="container_friendship_status" *ngIf="showFriendshipStatus && loggedUser.id !== user.id">
+    <button class="{{parseButtonClass(user.friendship_status!)}}">{{parseFriendshipStatus(user.friendship_status!)}}</button>
+  </div>
 </div>

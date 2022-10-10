@@ -26,8 +26,14 @@ export class FriendsComponent implements OnInit {
   }
 
   getUsers() {
+    if (!this.filter.filter_string) {
+      this.users = [];
+      return;
+    }
+
     this.userServices.getUsers(this.filter).subscribe(data => {
-      console.log(data);
+      this.users = data.users;
+      console.log(this.users);
     });
   }
 

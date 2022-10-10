@@ -10,6 +10,7 @@ import { FriendsComponent } from './home/components/friends/friends.component';
 import { HomeComponent } from './home/home.component';
 import { UserHeaderComponent } from './shared/userHeader/user-header.component';
 import { PostComponent } from './home/components/posts/post/post.component';
+import { MaterialModule } from '../shared/material.module';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { PostComponent } from './home/components/posts/post/post.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    PagesRoutingModule
+    PagesRoutingModule,
+    MaterialModule
   ],
   providers: []
 })

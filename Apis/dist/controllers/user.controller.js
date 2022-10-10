@@ -95,14 +95,16 @@ function getFriendshipsPosts(req, res) {
 }
 exports.getFriendshipsPosts = getFriendshipsPosts;
 function getUsers(req, res) {
+    const data = jsonwebtoken_1.default.decode(req.headers.authorization);
+    const token_id = data._id;
     const page = req.query.page;
     let filter_string = req.query.filter_string ? req.query.filter_string : null;
     if (filter_string !== null && filter_string !== 'null') {
         filter_string = "'" + filter_string + "'";
     }
-    database_1.default.query(`SELECT webapi_auth_user_search(${page}, ${filter_string})`)
+    database_1.default.query(`SELECT webapi_auth_user_search_with_friendship_status(${page}, ${token_id}, ${filter_string})`)
         .then(resp => {
-        const users = JSON.parse(resp.rows[0].webapi_auth_user_search);
+        const users = JSON.parse(resp.rows[0].webapi_auth_user_search_with_friendship_status);
         for (let user of users.users) {
             delete user.deleted;
             delete user.personal_data.password;
@@ -111,6 +113,7 @@ function getUsers(req, res) {
         res.status(200).json(Object.assign({}, users));
     })
         .catch(err => {
+        console.log(err);
         return res.status(400).send(err);
     });
 }

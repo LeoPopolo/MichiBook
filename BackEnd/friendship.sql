@@ -329,6 +329,29 @@ CREATE OR REPLACE FUNCTION friendship_paginate (
 $$ LANGUAGE sql IMMUTABLE STRICT;
 
 
+CREATE OR REPLACE FUNCTION friendship_parse_status (
+	p_friendship			     friendship,
+    p_user_from_id               int
+) RETURNS text AS $$
+DECLARE
+    v_friendship_status          text;
+BEGIN
+
+    IF p_friendship IS NULL THEN
+        v_friendship_status := 'no friends';
+    ELSIF id(user_emitted(p_friendship)) = p_user_from_id AND NOT is_accepted(p_friendship) THEN
+        v_friendship_status := 'emitted';
+    ELSIF id(user_received(p_friendship)) = p_user_from_id AND NOT is_accepted(p_friendship) THEN
+        v_friendship_status := 'received';
+    ELSIF is_accepted(p_friendship) THEN
+        v_friendship_status := 'friends';
+    END IF;
+
+    RETURN v_friendship_status;
+END$$
+LANGUAGE plpgsql IMMUTABLE;
+
+
 -- WEBAPIS
 
 
@@ -393,15 +416,7 @@ BEGIN
 	v_user := auth_user_identify_by_id(p_user_id);
     v_friendship := friendship_get_between_users(p_user_from_id, p_user_id);
 
-    IF v_friendship IS NULL THEN
-        v_friendship_status := 'no friends';
-    ELSIF id(user_emitted(v_friendship)) = p_user_from_id AND NOT is_accepted(v_friendship) THEN
-        v_friendship_status := 'emitted';
-    ELSIF id(user_received(v_friendship)) = p_user_from_id AND NOT is_accepted(v_friendship) THEN
-        v_friendship_status := 'received';
-    ELSIF is_accepted(v_friendship) THEN
-        v_friendship_status := 'friends';
-    END IF;
+    v_friendship_status := friendship_parse_status(v_friendship, p_user_from_id);
 
     v_tmp_user := jsonb_build_object (
         'id', id(v_user),
@@ -417,6 +432,61 @@ BEGIN
 	RETURN v_response::text;
 END$$ 
 LANGUAGE plpgsql IMMUTABLE STRICT;
+
+
+CREATE OR REPLACE FUNCTION webapi_auth_user_search_with_friendship_status (
+	p_page					    int,
+    p_user_id                   int,
+	p_filter    			    text DEFAULT '%'
+) RETURNS text AS $$
+DECLARE
+	v_users				        auth_user[];
+    v_users_with_friendship     jsonb[];
+    v_tmp_user                  auth_user;
+    v_tmp_friendship            friendship;
+	v_response				    jsonb;
+	v_total_pages			    int DEFAULT 0;
+BEGIN
+	
+	v_users := auth_user_get_users();
+	
+	IF p_filter != '%' AND p_filter IS NOT NULL
+	THEN
+		v_users := auth_user_filter_by_anything(v_users, p_filter);
+	END IF;
+	
+	IF p_page != 1
+	THEN
+		v_users := auth_user_paginate(p_page, v_users);
+	END IF;
+
+	v_total_pages := auth_user_get_total_pages(v_users);
+
+	IF v_total_pages IS NULL THEN
+		v_total_pages := 0;
+	END IF;
+
+    FOREACH v_tmp_user IN ARRAY v_users
+    LOOP
+        v_tmp_friendship := friendship_get_between_users(p_user_id, id(v_tmp_user));
+
+        v_users_with_friendship := array_append(v_users_with_friendship, jsonb_build_object (
+            'id', id(v_tmp_user),
+            'contact_information', contact_information(v_tmp_user),
+            'personal_data', personal_data(v_tmp_user),
+            'friendship_status', friendship_parse_status(v_tmp_friendship, p_user_id)
+        ));
+    END LOOP;
+	
+	v_response := jsonb_build_object (
+		'users', v_users_with_friendship,
+		'total_pages', v_total_pages,
+		'page_number', p_page
+	);
+
+	RETURN v_response::text;
+END$$ 
+LANGUAGE plpgsql STABLE;
 
 
 CREATE OR REPLACE FUNCTION webapi_friendship_get_user_requests (

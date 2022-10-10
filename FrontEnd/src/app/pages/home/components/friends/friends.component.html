@@ -9,6 +9,10 @@
       (ngModelChange)="getUsers()"
     >
   </header>
-  <div *ngFor="let item of friends">
+  <div *ngFor="let user of users">
+    <app-user-header
+      [user]="user"
+      [showFriendshipStatus]="true"
+    ></app-user-header>
   </div>
 </aside>

@@ -4,29 +4,9 @@ main {
   max-height: 94vh;
   background-color: #fbfbfb;
 
-  .user-data {
-    display: flex;
-    align-items: center;
-    margin-bottom: .5em;
-    padding-left: 1.5em;
-
-    .user-data_image {
-      width: 2em;
-      height: 2em;
-      border-radius: 50%;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      img {
-        height: 100%;
-      }
-    }
-
-    span {
-      margin-left: .5em;
-    }
+  app-user-header {
+    margin-left: 1.5em;
+    display: block;
   }
 
   .post {

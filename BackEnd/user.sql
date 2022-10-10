@@ -262,45 +262,6 @@ END$$
 LANGUAGE plpgsql VOLATILE;
 
 
-CREATE OR REPLACE FUNCTION webapi_auth_user_search (
-	p_page					    int,
-	p_filter    			    text DEFAULT '%'
-) RETURNS text AS $$
-DECLARE
-	v_users				        auth_user[];
-	v_response				    jsonb;
-	v_total_pages			    int DEFAULT 0;
-BEGIN
-	
-	v_users := auth_user_get_users();
-	
-	IF p_filter != '%' AND p_filter IS NOT NULL
-	THEN
-		v_users := auth_user_filter_by_anything(v_users, p_filter);
-	END IF;
-	
-	IF p_page != 1
-	THEN
-		v_users := auth_user_paginate(p_page, v_users);
-	END IF;
-
-	v_total_pages := auth_user_get_total_pages(v_users);
-
-	IF v_total_pages IS NULL THEN
-		v_total_pages := 0;
-	END IF;
-	
-	v_response := jsonb_build_object (
-		'users', array_to_json(v_users),
-		'total_pages', v_total_pages,
-		'page_number', p_page
-	);
-
-	RETURN v_response::text;
-END$$ 
-LANGUAGE plpgsql STABLE;
-
-
 CREATE OR REPLACE FUNCTION webapi_auth_user_identify_by_id (
 	p_id						int
 ) RETURNS text AS $$
