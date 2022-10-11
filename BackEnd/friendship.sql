@@ -199,6 +199,7 @@ CREATE OR REPLACE FUNCTION friendship_get_friends_by_user (
             WHERE NOT u.deleted AND NOT f.deleted AND (id(f.user_emitted) = p_user_id OR id(f.user_received) = p_user_id)
 			    AND (id(f.user_emitted) = u.id OR id(f.user_received) = u.id)
                 AND u.id != p_user_id
+                AND is_accepted
 				    ORDER BY name(personal_data) ASC
 	);
 
@@ -441,7 +442,7 @@ CREATE OR REPLACE FUNCTION webapi_auth_user_search_with_friendship_status (
 ) RETURNS text AS $$
 DECLARE
 	v_users				        auth_user[];
-    v_users_with_friendship     jsonb[];
+    v_users_with_friendship     jsonb[] DEFAULT '{}';
     v_tmp_user                  auth_user;
     v_tmp_friendship            friendship;
 	v_response				    jsonb;

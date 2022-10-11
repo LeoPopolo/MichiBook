@@ -15,7 +15,7 @@ router.get('/posts/list', verifyToken_1.tokenValidation, user_controller_1.getFr
 router.get('/own_posts/list', verifyToken_1.tokenValidation, user_controller_1.getOwnPosts);
 router.delete('/post/:post_id', verifyToken_1.tokenValidation, user_controller_1.deletePost);
 router.patch('/friendship_request/:id', verifyToken_1.tokenValidation, user_controller_1.sendFriendshipRequest);
-router.get('/friendship_request', verifyToken_1.tokenValidation, user_controller_1.getUserRequests);
+router.get('/friendship_request/list', verifyToken_1.tokenValidation, user_controller_1.getUserRequests);
 router.get('/friendships/list', verifyToken_1.tokenValidation, user_controller_1.getFriendships);
 router.patch('/accept_friendship/:id', verifyToken_1.tokenValidation, user_controller_1.acceptFriendshipRequest);
 router.patch('/decline_friendship/:id', verifyToken_1.tokenValidation, user_controller_1.declineFriendshipRequest);

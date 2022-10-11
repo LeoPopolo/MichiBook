@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../interfaces/user.interface';
+import { Friendship } from '../../../../interfaces/friendship.interface';
 
 @Component({
   selector: 'app-friends',
@@ -10,6 +11,9 @@ import { User } from '../../../../interfaces/user.interface';
 export class FriendsComponent implements OnInit {
 
   @Input() friends!: Array<User>;
+  @Input() requests!: Array<Friendship>;
+
+  @Output() requestHandled: EventEmitter<any> = new EventEmitter();
 
   users: Array<User> = [];
 
@@ -33,8 +37,11 @@ export class FriendsComponent implements OnInit {
 
     this.userServices.getUsers(this.filter).subscribe(data => {
       this.users = data.users;
-      console.log(this.users);
     });
+  }
+
+  emitRequestHandled() {
+    this.requestHandled.emit();
   }
 
 }

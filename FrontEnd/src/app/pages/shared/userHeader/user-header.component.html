@@ -5,7 +5,11 @@
     </div>
     <span>{{user.personal_data.name}} {{user.personal_data.surname}}</span>
   </div>
-  <div class="container_friendship_status" *ngIf="showFriendshipStatus && loggedUser.id !== user.id">
+  <div *ngIf="showFriendshipStatus && loggedUser.id !== user.id">
     <button class="{{parseButtonClass(user.friendship_status!)}}">{{parseFriendshipStatus(user.friendship_status!)}}</button>
+  </div>
+  <div *ngIf="showRequestActions">
+    <button class="btn-primary" (click)="confirmRequestClick()">Confirmar</button>
+    <button class="btn-secondary" (click)="declineRequestClick()">Rechazar</button>
   </div>
 </div>

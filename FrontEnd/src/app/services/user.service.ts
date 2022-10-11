@@ -41,4 +41,20 @@ export class UserService {
 
     return this._http.post<any>(`${this.endpoint}/user/post`, post, { headers: headers });
   }
+
+  sendFriendshipRequest(id: number): Observable<any> {
+    return this._http.patch<any>(`${this.endpoint}/user/friendship_request/${id}`, null);
+  }
+
+  getFriendshipRequest(): Observable<any> {
+    return this._http.get<any>(`${this.endpoint}/user/friendship_request/list`);
+  }
+
+  acceptFriendshipRequest(id: number): Observable<any> {
+    return this._http.patch<any>(`${this.endpoint}/user/accept_friendship/${id}`, null);
+  }
+
+  declineFriendshipRequest(id: number): Observable<any> {
+    return this._http.patch<any>(`${this.endpoint}/user/decline_friendship/${id}`, null);
+  }
 }

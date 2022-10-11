@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Friendship } from '../../interfaces/friendship.interface';
 import { Post } from '../../interfaces/post.interface';
 import { User, createUser } from '../../interfaces/user.interface';
 import { UserService } from '../../services/user.service';
@@ -13,6 +14,7 @@ export class HomeComponent implements OnInit {
   user: User = createUser();
   friends: Array<User> = [];
   posts: Array<Post> = [];
+  requests: Array<Friendship> = [];
 
   pageFriends: number = 1;
   pagePosts: number = 1;
@@ -25,6 +27,7 @@ export class HomeComponent implements OnInit {
     this.getUserProfile();
     this.getFriends();
     this.getPosts();
+    this.getFriendshipRequests();
   }
 
   getUserProfile() {
@@ -42,6 +45,12 @@ export class HomeComponent implements OnInit {
   getPosts() {
     this.userServices.getPosts(this.pagePosts).subscribe(data => {
       this.posts = data.posts;
+    });
+  }
+
+  getFriendshipRequests() {
+    this.userServices.getFriendshipRequest().subscribe(data => {
+      this.requests = data.requests;
     });
   }
 

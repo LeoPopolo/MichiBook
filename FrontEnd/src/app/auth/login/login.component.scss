@@ -3,12 +3,12 @@ main {
     height: 100vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(to bottom right, #9568e1, #d0f0ff);
+    background: linear-gradient(to bottom right, var(--primary-color), #d0f0ff);
     flex-direction: column;
 
     .title {
       font-family: 'DynaPuff', cursive;
-      color: #673ab7;
+      color: var(--primary-color);
       margin-top: 5%;
       font-size: 3em;
     }
@@ -53,7 +53,7 @@ main {
         }
 
         .btn-login {
-            background-color: #673ab7;
+            background-color: var(--primary-color);
             color: #fff;
             border-radius: 5px;
             margin-block: 1em;
@@ -63,7 +63,7 @@ main {
 
         .btn-subscribe {
           background-color: transparent;
-          color: #673ab7;
+          color: var(--primary-color);
           cursor: pointer;
           margin-block: 1em;
         }

@@ -34,7 +34,7 @@ router.get('/own_posts/list', tokenValidation, getOwnPosts);
 router.delete('/post/:post_id', tokenValidation, deletePost);
 
 router.patch('/friendship_request/:id', tokenValidation, sendFriendshipRequest);
-router.get('/friendship_request', tokenValidation, getUserRequests);
+router.get('/friendship_request/list', tokenValidation, getUserRequests);
 router.get('/friendships/list', tokenValidation, getFriendships);
 router.patch('/accept_friendship/:id', tokenValidation, acceptFriendshipRequest);
 router.patch('/decline_friendship/:id', tokenValidation, declineFriendshipRequest);

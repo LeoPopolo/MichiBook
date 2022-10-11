@@ -195,7 +195,9 @@ function sendFriendshipRequest(req, res) {
 }
 exports.sendFriendshipRequest = sendFriendshipRequest;
 function getUserRequests(req, res) {
-    const page = req.query.page;
+    let page = req.query.page;
+    if (!page)
+        page = '1';
     const data = jsonwebtoken_1.default.decode(req.headers.authorization);
     const token_id = data._id;
     database_1.default.query(`SELECT webapi_friendship_get_user_requests(${page}, ${token_id})`)

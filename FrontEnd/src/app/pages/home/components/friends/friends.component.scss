@@ -2,6 +2,7 @@ aside {
   padding: 1.5em;
   height: 94vh;
   box-shadow: -1px -1px 10px 1px #bbb;
+  position: relative;
 
   header {
     display: flex;
@@ -10,6 +11,7 @@ aside {
 
     h3 {
       display: inline;
+      color: var(--medium-grey);
     }
 
     .search-people {
@@ -20,5 +22,13 @@ aside {
       padding: .5em 1em;
       border: 1px solid var(--primary-color);
     }
+  }
+
+  app-requests {
+    width: 95%;
+    position: absolute;
+    bottom: 0;
+    max-height: 40vh;
+    min-height: 15vh;
   }
 }

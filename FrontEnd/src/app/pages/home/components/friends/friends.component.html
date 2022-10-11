@@ -15,4 +15,8 @@
       [showFriendshipStatus]="true"
     ></app-user-header>
   </div>
+  <app-requests
+    [requests]="requests"
+    (requestHandled)="emitRequestHandled()"
+  ></app-requests>
 </aside>

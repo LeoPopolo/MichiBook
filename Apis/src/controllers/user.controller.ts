@@ -118,7 +118,7 @@ export function getUsers(req: Request, res: Response) {
     
     conn.query(`SELECT webapi_auth_user_search_with_friendship_status(${page}, ${token_id}, ${filter_string})`)
     .then(resp => {
-                
+
         const users = JSON.parse((resp as any).rows[0].webapi_auth_user_search_with_friendship_status);
 
         for (let user of users.users) {
@@ -249,7 +249,10 @@ export function sendFriendshipRequest(req: Request, res: Response) {
 
 export function getUserRequests(req: Request, res: Response) {
 
-    const page = req.query.page;
+    let page = req.query.page;
+
+    if (!page)
+        page = '1';
 
     const data = jwt.decode(req.headers.authorization);
     const token_id = (data as any)._id;

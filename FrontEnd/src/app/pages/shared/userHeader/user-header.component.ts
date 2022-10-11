@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { User } from '../../../interfaces/user.interface';
 
 @Component({
@@ -10,6 +10,9 @@ export class UserHeaderComponent implements OnInit {
 
   @Input() user!: User;
   @Input() showFriendshipStatus!: boolean;
+  @Input() showRequestActions!: boolean;
+
+  @Output() confirmRequest: EventEmitter<boolean> = new EventEmitter();
 
   loggedUser: User;
 
@@ -45,5 +48,13 @@ export class UserHeaderComponent implements OnInit {
       return 'btn-secondary';
     else
       return 'btn-primary';
+  }
+
+  confirmRequestClick() {
+    this.confirmRequest.emit(true);
+  }
+
+  declineRequestClick() {
+    this.confirmRequest.emit(false);
   }
 }

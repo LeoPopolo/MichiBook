@@ -1,0 +1,11 @@
+<main>
+  <h3>Solicitudes de amistad</h3>
+  <section>
+    <app-user-header
+      *ngFor="let request of requests"
+      [user]="request.user_emitted"
+      [showRequestActions]="true"
+      (confirmRequest)="handleRequest($event, request)"
+    ></app-user-header>
+  </section>
+</main>

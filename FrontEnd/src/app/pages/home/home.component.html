@@ -9,5 +9,7 @@
   ></app-posts>
   <app-friends
     [friends]="friends"
+    [requests]="requests"
+    (requestHandled)="ngOnInit()"
   ></app-friends>
 </main>
