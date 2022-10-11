@@ -24,6 +24,22 @@ aside {
     }
   }
 
+  .no-search-text {
+    margin-top: 40%;
+
+    img {
+      width: 20%;
+      display: block;
+      margin: 1em auto;
+    }
+
+    h4 {
+      color: var(--light-grey);
+      font-size: .8em;
+      text-align: center;
+    }
+  }
+
   app-requests {
     width: 95%;
     position: absolute;

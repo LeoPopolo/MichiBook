@@ -27,7 +27,7 @@ export async function register(req: Request, res: Response) {
             _id: req.body.username
         }, process.env.TOKEN_SECRET);
      
-        const data = JSON.parse((resp as any).rows[0].webapi_register);
+        const data = JSON.parse(resp.rows[0].webapi_register);
 
         delete data.user.personal_data.password;
         delete data.user.deleted;
@@ -50,7 +50,7 @@ export function login(req: Request, res: Response) {
     conn.query(`SELECT webapi_login('${req.body.username}')`)
     .then(async resp => {
 
-        const user = JSON.parse((resp as any).rows[0].webapi_login);
+        const user = JSON.parse(resp.rows[0].webapi_login);
 
         const correctPassword = await validatePassword(req.body.password, user.personal_data.password);
     
@@ -87,7 +87,7 @@ export function getFriendshipsPosts(req: Request, res: Response) {
     conn.query(`SELECT webapi_post_search_by_friendship(${token_id}, ${page})`)
     .then(resp => {
                 
-        const posts = JSON.parse((resp as any).rows[0].webapi_post_search_by_friendship);
+        const posts = JSON.parse(resp.rows[0].webapi_post_search_by_friendship);
 
         for (let post of posts.posts) {
             delete post.user_owner.deleted;
@@ -118,8 +118,8 @@ export function getUsers(req: Request, res: Response) {
     
     conn.query(`SELECT webapi_auth_user_search_with_friendship_status(${page}, ${token_id}, ${filter_string})`)
     .then(resp => {
-
-        const users = JSON.parse((resp as any).rows[0].webapi_auth_user_search_with_friendship_status);
+        
+        const users = JSON.parse(resp.rows[0].webapi_auth_user_search_with_friendship_status);
 
         for (let user of users.users) {
             delete user.deleted;
@@ -147,7 +147,7 @@ export function getOwnPosts(req: Request, res: Response) {
     conn.query(`SELECT webapi_post_search_own(${token_id}, ${page})`)
     .then(resp => {
                 
-        const posts = JSON.parse((resp as any).rows[0].webapi_post_search_own);
+        const posts = JSON.parse(resp.rows[0].webapi_post_search_own);
 
         for (let post of posts.posts) {
             delete post.user_owner.deleted;
@@ -172,7 +172,7 @@ export function createPost(req: Request, res: Response) {
     conn.query(`SELECT webapi_create_post(${token_id}, '${req.body.post_text}', ${req.body.image_path})`)
     .then(resp => {
                 
-        const post = JSON.parse((resp as any).rows[0].webapi_create_post);
+        const post = JSON.parse(resp.rows[0].webapi_create_post);
 
         delete post.post.user_owner.deleted;
         delete post.post.user_owner.personal_data.password;
@@ -195,7 +195,7 @@ export function createComment(req: Request, res: Response) {
     conn.query(`SELECT webapi_create_comment(${token_id}, '${req.body.post_text}', ${req.body.image_id}, ${req.body.post_id})`)
     .then(resp => {
                 
-        const post = JSON.parse((resp as any).rows[0].webapi_create_comment);
+        const post = JSON.parse(resp.rows[0].webapi_create_comment);
 
         res.status(200).json({
             ...post
@@ -214,7 +214,7 @@ export function deletePost(req: Request, res: Response) {
     conn.query(`SELECT webapi_delete_post(${token_id}, ${req.params.post_id})`)
     .then(resp => {
                 
-        const post = JSON.parse((resp as any).rows[0].webapi_delete_post);
+        const post = JSON.parse(resp.rows[0].webapi_delete_post);
 
         res.status(200).json({
             ...post
@@ -233,7 +233,7 @@ export function sendFriendshipRequest(req: Request, res: Response) {
     conn.query(`SELECT webapi_friendship_send_request(${token_id}, ${req.params.id})`)
     .then(resp => {
                 
-        const friendship = JSON.parse((resp as any).rows[0].webapi_friendship_send_request);
+        const friendship = JSON.parse(resp.rows[0].webapi_friendship_send_request);
 
         delete friendship.friendship.user_emitted.personal_data.password;
         delete friendship.friendship.user_received.personal_data.password;
@@ -260,7 +260,7 @@ export function getUserRequests(req: Request, res: Response) {
     conn.query(`SELECT webapi_friendship_get_user_requests(${page}, ${token_id})`)
     .then(resp => {
 
-        const friendship = JSON.parse((resp as any).rows[0].webapi_friendship_get_user_requests);
+        const friendship = JSON.parse(resp.rows[0].webapi_friendship_get_user_requests);
         
         for (let request of friendship.requests) {
             delete request.user_emitted.personal_data.password;
@@ -286,7 +286,7 @@ export function getFriendships(req: Request, res: Response) {
     conn.query(`SELECT webapi_friendship_search_friends(${page}, ${token_id})`)
     .then(resp => {
 
-        const users = JSON.parse((resp as any).rows[0].webapi_friendship_search_friends);
+        const users = JSON.parse(resp.rows[0].webapi_friendship_search_friends);
         
         for (let item of users.friends) {
             delete item.personal_data.password;
@@ -311,7 +311,7 @@ export function identifyById(req: Request, res: Response) {
     conn.query(`SELECT webapi_friendship_identify_by_user_id(${token_id}, ${req.params.id})`)
     .then(resp => {
 
-        const friendship = JSON.parse((resp as any).rows[0].webapi_friendship_identify_by_user_id);
+        const friendship = JSON.parse(resp.rows[0].webapi_friendship_identify_by_user_id);
 
         delete friendship.user.personal_data.password;
 
@@ -332,7 +332,7 @@ export function getProfile(req: Request, res: Response) {
     conn.query(`SELECT webapi_auth_user_identify_by_id(${token_id})`)
     .then(resp => {
 
-        const data = JSON.parse((resp as any).rows[0].webapi_auth_user_identify_by_id);
+        const data = JSON.parse(resp.rows[0].webapi_auth_user_identify_by_id);
 
         delete data.user.personal_data.password;
         delete data.user.deleted;
@@ -355,7 +355,7 @@ export function acceptFriendshipRequest(req: Request, res: Response) {
     conn.query(`SELECT webapi_accept_friendship(${req.params.id}, ${token_id})`)
     .then(resp => {
 
-        const response = JSON.parse((resp as any).rows[0].webapi_accept_friendship);
+        const response = JSON.parse(resp.rows[0].webapi_accept_friendship);
 
         res.status(200).json({
             ...response
@@ -374,7 +374,7 @@ export function declineFriendshipRequest(req: Request, res: Response) {
     conn.query(`SELECT webapi_decline_friendship(${req.params.id}, ${token_id})`)
     .then(resp => {
 
-        const response = JSON.parse((resp as any).rows[0].webapi_decline_friendship);
+        const response = JSON.parse(resp.rows[0].webapi_decline_friendship);
 
         res.status(200).json({
             ...response
@@ -393,7 +393,7 @@ export function removeFriendshipRequest(req: Request, res: Response) {
     conn.query(`SELECT webapi_remove_friendship(${req.params.id}, ${token_id})`)
     .then(resp => {
 
-        const response = JSON.parse((resp as any).rows[0].webapi_remove_friendship);
+        const response = JSON.parse(resp.rows[0].webapi_remove_friendship);
 
         res.status(200).json({
             ...response

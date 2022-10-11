@@ -2,4 +2,14 @@ main {
   h3 {
     color: var(--medium-grey);
   }
+
+  .no-requests-text {
+    margin-top: 10%;
+
+    h4 {
+      color: var(--light-grey);
+      font-size: .8em;
+      text-align: center;
+    }
+  }
 }

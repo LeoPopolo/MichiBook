@@ -85,12 +85,12 @@ CREATE OR REPLACE FUNCTION post_get_by_friendship (
 ) RETURNS post[] AS $$
 
     SELECT array (
-		SELECT p FROM post p, friendship f WHERE (NOT p.deleted) AND (id(user_emitted) = p_user_id OR id(user_received) = p_user_id) 
+		SELECT DISTINCT p FROM post p, friendship f WHERE (NOT p.deleted) AND (id(user_emitted) = p_user_id OR id(user_received) = p_user_id) 
                                                     AND (id(user_owner) = id(user_received) OR 
                                                          id(user_owner) = id(user_emitted))
                                                     AND ((id(user_owner) != p_user_id AND f.is_accepted) OR (id(user_owner) = p_user_id))
                                                     AND parent_id IS NULL
-				ORDER BY p.creation_timestamp DESC
+				ORDER BY p DESC
 	);
 
 $$ LANGUAGE sql STABLE STRICT;

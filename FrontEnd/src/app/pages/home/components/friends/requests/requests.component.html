@@ -7,5 +7,8 @@
       [showRequestActions]="true"
       (confirmRequest)="handleRequest($event, request)"
     ></app-user-header>
+    <div *ngIf="requests.length < 1" class="no-requests-text">
+      <h4>No tiene solicitudes pendientes</h4>
+    </div>
   </section>
 </main>

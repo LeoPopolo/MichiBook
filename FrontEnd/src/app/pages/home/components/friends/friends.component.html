@@ -9,10 +9,15 @@
       (ngModelChange)="getUsers()"
     >
   </header>
+  <div *ngIf="!filter.filter_string" class="no-search-text">
+    <img src="../../../../../assets/search.png">
+    <h4>Aquí aparecerán los resultados de la búsqueda</h4>
+  </div>
   <div *ngFor="let user of users">
     <app-user-header
       [user]="user"
       [showFriendshipStatus]="true"
+      (sendRequest)="sendRequest($event)"
     ></app-user-header>
   </div>
   <app-requests

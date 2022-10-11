@@ -14,6 +14,7 @@ export class FriendsComponent implements OnInit {
   @Input() requests!: Array<Friendship>;
 
   @Output() requestHandled: EventEmitter<any> = new EventEmitter();
+  @Output() requestSentHandled: EventEmitter<any> = new EventEmitter();
 
   users: Array<User> = [];
 
@@ -37,6 +38,13 @@ export class FriendsComponent implements OnInit {
 
     this.userServices.getUsers(this.filter).subscribe(data => {
       this.users = data.users;
+    });
+  }
+
+  sendRequest(id: number) {
+    this.userServices.sendFriendshipRequest(id).subscribe(() => {
+      this.requestSentHandled.emit();
+      this.getUsers();
     });
   }
 

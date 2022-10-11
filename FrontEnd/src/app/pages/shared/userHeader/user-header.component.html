@@ -6,7 +6,7 @@
     <span>{{user.personal_data.name}} {{user.personal_data.surname}}</span>
   </div>
   <div *ngIf="showFriendshipStatus && loggedUser.id !== user.id">
-    <button class="{{parseButtonClass(user.friendship_status!)}}">{{parseFriendshipStatus(user.friendship_status!)}}</button>
+    <button class="{{parseButtonClass()}}" (click)="action()">{{parseFriendshipStatus()}}</button>
   </div>
   <div *ngIf="showRequestActions">
     <button class="btn-primary" (click)="confirmRequestClick()">Confirmar</button>

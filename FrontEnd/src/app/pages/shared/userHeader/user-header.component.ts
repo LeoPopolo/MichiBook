@@ -13,6 +13,7 @@ export class UserHeaderComponent implements OnInit {
   @Input() showRequestActions!: boolean;
 
   @Output() confirmRequest: EventEmitter<boolean> = new EventEmitter();
+  @Output() sendRequest: EventEmitter<number> = new EventEmitter();
 
   loggedUser: User;
 
@@ -23,8 +24,8 @@ export class UserHeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  parseFriendshipStatus(status: string) {
-    switch (status) {
+  parseFriendshipStatus() {
+    switch (this.user.friendship_status) {
       case 'no friends': {
         return 'Agregar';
       }
@@ -43,11 +44,19 @@ export class UserHeaderComponent implements OnInit {
     }
   }
 
-  parseButtonClass(status: string) {
-    if (status === 'emitted' || status === 'received' || status === 'friends')
+  parseButtonClass() {
+    if (this.user.friendship_status === 'emitted' ||
+        this.user.friendship_status === 'received' ||
+        this.user.friendship_status === 'friends')
       return 'btn-secondary';
     else
       return 'btn-primary';
+  }
+
+  action() {
+    if (this.user.friendship_status === 'no friends') {
+      this.sendRequest.emit(this.user.id);
+    }
   }
 
   confirmRequestClick() {
