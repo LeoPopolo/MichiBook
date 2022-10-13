@@ -18,7 +18,8 @@ import { createPost,
          removeFriendshipRequest,
          identifyById,
          getUsers, 
-         getProfile
+         getProfile,
+         getPostsById
 } from '../controllers/user.controller';
 
 router.post('/register', register);
@@ -31,6 +32,7 @@ router.post('/post', tokenValidation, createPost);
 router.post('/comment', tokenValidation, createComment);
 router.get('/posts/list', tokenValidation, getFriendshipsPosts);
 router.get('/own_posts/list', tokenValidation, getOwnPosts);
+router.get('/posts/:id', tokenValidation, getPostsById);
 router.delete('/post/:post_id', tokenValidation, deletePost);
 
 router.patch('/friendship_request/:id', tokenValidation, sendFriendshipRequest);

@@ -8,7 +8,7 @@ import { Friendship } from '../../../../interfaces/friendship.interface';
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.scss']
 })
-export class FriendsComponent implements OnInit {
+export class FriendsComponent {
 
   @Input() friends!: Array<User>;
   @Input() requests!: Array<Friendship>;
@@ -26,9 +26,6 @@ export class FriendsComponent implements OnInit {
   constructor(
     private userServices: UserService
   ) { }
-
-  ngOnInit(): void {
-  }
 
   getUsers() {
     if (!this.filter.filter_string) {

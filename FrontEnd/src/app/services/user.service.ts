@@ -18,11 +18,19 @@ export class UserService {
   }
 
   getFriends(page: number): Observable<any> {
-    return this._http.get<any>(`${this.endpoint}/user/friendships/list?page=${page}`);
+
+    let params = new HttpParams()
+      .set('page', page)
+
+    return this._http.get<any>(`${this.endpoint}/user/friendships/list`, { params: params });
   }
 
   getPosts(page: number): Observable<any> {
-    return this._http.get<any>(`${this.endpoint}/user/posts/list?page=${page}`);
+
+    let params = new HttpParams()
+      .set('page', page)
+
+    return this._http.get<any>(`${this.endpoint}/user/posts/list`, { params: params });
   }
 
   getUsers(filters: any): Observable<any> {
@@ -32,6 +40,18 @@ export class UserService {
       .set('filter_string', filters.filter_string);
 
     return this._http.get<any>(`${this.endpoint}/user`, { params: params });
+  }
+
+  getPostsById(id: number, page: number): Observable<any> {
+
+    let params = new HttpParams()
+      .set('page', page)
+
+    return this._http.get<any>(`${this.endpoint}/user/posts/${id}`, { params: params });
+  }
+
+  identifyUserById(id: number): Observable<any> {
+    return this._http.get<any>(`${this.endpoint}/user/${id}`);
   }
 
   createPost(post: any): Observable<any> {

@@ -104,6 +104,30 @@ export function getFriendshipsPosts(req: Request, res: Response) {
     });
 }
 
+export function getPostsById(req: Request, res: Response) {
+
+    const page = req.query.page;
+
+    conn.query(`SELECT webapi_post_search_by_id(${req.params.id}, ${page})`)
+    .then(resp => {
+                
+        const posts = JSON.parse(resp.rows[0].webapi_post_search_by_id);
+
+        for (let post of posts.posts) {
+            delete post.user_owner.deleted;
+            delete post.user_owner.creation_timestamp;
+            delete post.user_owner.personal_data.password;
+        }
+
+        res.status(200).json({
+            ...posts
+        });
+    })
+    .catch(err => {
+        return res.status(400).send(err);
+    });
+}
+
 export function getUsers(req: Request, res: Response) {
     
     const data = jwt.decode(req.headers.authorization);

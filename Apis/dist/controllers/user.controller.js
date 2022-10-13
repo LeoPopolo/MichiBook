@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeFriendshipRequest = exports.declineFriendshipRequest = exports.acceptFriendshipRequest = exports.getProfile = exports.identifyById = exports.getFriendships = exports.getUserRequests = exports.sendFriendshipRequest = exports.deletePost = exports.createComment = exports.createPost = exports.getOwnPosts = exports.getUsers = exports.getFriendshipsPosts = exports.login = exports.register = void 0;
+exports.removeFriendshipRequest = exports.declineFriendshipRequest = exports.acceptFriendshipRequest = exports.getProfile = exports.identifyById = exports.getFriendships = exports.getUserRequests = exports.sendFriendshipRequest = exports.deletePost = exports.createComment = exports.createPost = exports.getOwnPosts = exports.getUsers = exports.getPostsById = exports.getFriendshipsPosts = exports.login = exports.register = void 0;
 const user_1 = require("../models/user");
 const database_1 = __importDefault(require("../database"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -94,6 +94,23 @@ function getFriendshipsPosts(req, res) {
     });
 }
 exports.getFriendshipsPosts = getFriendshipsPosts;
+function getPostsById(req, res) {
+    const page = req.query.page;
+    database_1.default.query(`SELECT webapi_post_search_by_id(${req.params.id}, ${page})`)
+        .then(resp => {
+        const posts = JSON.parse(resp.rows[0].webapi_post_search_by_id);
+        for (let post of posts.posts) {
+            delete post.user_owner.deleted;
+            delete post.user_owner.creation_timestamp;
+            delete post.user_owner.personal_data.password;
+        }
+        res.status(200).json(Object.assign({}, posts));
+    })
+        .catch(err => {
+        return res.status(400).send(err);
+    });
+}
+exports.getPostsById = getPostsById;
 function getUsers(req, res) {
     const data = jsonwebtoken_1.default.decode(req.headers.authorization);
     const token_id = data._id;

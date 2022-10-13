@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { User } from '../../../interfaces/user.interface';
+import { ModalSeeUserComponent } from '../modal-see-user/modal-see-user.component';
 
 @Component({
   selector: 'app-user-header',
@@ -17,7 +19,9 @@ export class UserHeaderComponent implements OnInit {
 
   loggedUser: User;
 
-  constructor() {
+  constructor(
+    private dialog: MatDialog
+  ) {
     this.loggedUser = JSON.parse(localStorage.getItem('user')!);
   }
 
@@ -57,6 +61,18 @@ export class UserHeaderComponent implements OnInit {
     if (this.user.friendship_status === 'no friends') {
       this.sendRequest.emit(this.user.id);
     }
+  }
+
+  openModalSeeUser() {
+    const dialogOptions = {
+      width: '50%',
+      maxHeight: '80vh',
+      data: {
+        id: this.user.id
+      }
+    }
+
+    this.dialog.open(ModalSeeUserComponent, dialogOptions);
   }
 
   confirmRequestClick() {

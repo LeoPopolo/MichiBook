@@ -13,6 +13,7 @@ router.post('/post', verifyToken_1.tokenValidation, user_controller_1.createPost
 router.post('/comment', verifyToken_1.tokenValidation, user_controller_1.createComment);
 router.get('/posts/list', verifyToken_1.tokenValidation, user_controller_1.getFriendshipsPosts);
 router.get('/own_posts/list', verifyToken_1.tokenValidation, user_controller_1.getOwnPosts);
+router.get('/posts/:id', verifyToken_1.tokenValidation, user_controller_1.getPostsById);
 router.delete('/post/:post_id', verifyToken_1.tokenValidation, user_controller_1.deletePost);
 router.patch('/friendship_request/:id', verifyToken_1.tokenValidation, user_controller_1.sendFriendshipRequest);
 router.get('/friendship_request/list', verifyToken_1.tokenValidation, user_controller_1.getUserRequests);

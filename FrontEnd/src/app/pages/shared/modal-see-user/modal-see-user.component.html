@@ -1,0 +1,17 @@
+<main>
+  <header>
+    <div class="profile-image">
+      <img *ngIf="user.personal_data.image_path" src="http://localhost:3000/api/files/download/{{user.personal_data.image_path}}">
+      <img *ngIf="!user.personal_data.image_path" src="../../../../../assets/no-profile.png">
+    </div>
+  </header>
+  <section>
+    <h3>{{user.personal_data.name}} {{user.personal_data.surname}}</h3>
+    <h4>@{{user.personal_data.username}}</h4>
+    <p>{{user.personal_data.profile_description}}</p>
+  </section>
+  <app-post
+    *ngFor="let post of userWithPosts.posts"
+    [post]="post"
+  ></app-post>
+</main>

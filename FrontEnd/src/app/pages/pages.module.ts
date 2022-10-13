@@ -12,6 +12,7 @@ import { UserHeaderComponent } from './shared/userHeader/user-header.component';
 import { PostComponent } from './home/components/posts/post/post.component';
 import { MaterialModule } from '../shared/material.module';
 import { RequestsComponent } from './home/components/friends/requests/requests.component';
+import { ModalSeeUserComponent } from './shared/modal-see-user/modal-see-user.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { RequestsComponent } from './home/components/friends/requests/requests.c
     HomeComponent,
     UserHeaderComponent,
     PostComponent,
-    RequestsComponent
+    RequestsComponent,
+    ModalSeeUserComponent
   ],
   imports: [
     CommonModule,

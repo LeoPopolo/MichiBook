@@ -294,3 +294,52 @@ BEGIN
 	RETURN v_response::text;
 END$$ 
 LANGUAGE plpgsql IMMUTABLE;
+
+
+CREATE OR REPLACE FUNCTION webapi_post_search_by_id (
+    p_user_id               int,
+	p_page					int
+) RETURNS text AS $$
+DECLARE
+	v_posts				    post[];
+	v_response				jsonb;
+    v_posts_with_comments   jsonb[] DEFAULT '{}';
+	v_total_pages			int DEFAULT 0;
+    v_post                  post;
+BEGIN
+	
+	v_posts := post_get_by_user(p_user_id);
+	
+	IF p_page != 1
+	THEN
+		v_posts := post_paginate(p_page, v_posts);
+	END IF;
+
+	v_total_pages := post_get_total_pages(v_posts);
+
+	IF v_total_pages IS NULL THEN
+		v_total_pages := 0;
+	END IF;
+
+    FOREACH v_post IN ARRAY v_posts
+    LOOP
+        v_posts_with_comments := array_append(v_posts_with_comments, jsonb_build_object (
+            'id', id(v_post),
+            'image_path', image_path(v_post),
+            'parent_id', parent_id(v_post),
+            'post_text', post_text(v_post),
+            'creation_timestamp', creation_timestamp(v_post),
+            'comments', post_get_as_comment(id(v_post)),
+            'user_owner', to_json(user_owner(v_post))
+        ));
+    END LOOP;
+	
+	v_response := jsonb_build_object (
+		'posts', v_posts_with_comments,
+		'total_pages', v_total_pages,
+		'page_number', p_page
+	);
+
+	RETURN v_response::text;
+END$$ 
+LANGUAGE plpgsql IMMUTABLE;
