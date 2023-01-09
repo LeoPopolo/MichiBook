@@ -44,4 +44,8 @@ export class LoginComponent implements OnInit {
     );
   }
 
+  register() {
+    alert('todavia no está habilitado');
+  }
+
 }
